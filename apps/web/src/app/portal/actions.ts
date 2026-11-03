@@ -2,6 +2,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { santiagoToIso } from '@/modules/community/domain/time';
+import { portalSection } from '@/modules/identity/domain/portal-navigation';
 import { requireMembership } from '@/modules/identity/infrastructure/session';
 
 function uuid(value: unknown) {
@@ -139,7 +140,20 @@ export async function operate(form: FormData) {
     successful = false;
   }
   revalidatePath(`/portal/${member.id}`);
+  const section = portalSection(
+    member.role,
+    String(form.get('return_section') ?? ''),
+  );
+  const location =
+    member.role === 'administrador'
+      ? 'seccion=operaciones&operacion=' + section
+      : 'seccion=' + section;
   redirect(
-    `/portal/${member.id}?estado=${successful ? 'guardado' : 'no_disponible'}`,
+    '/portal/' +
+      member.id +
+      '?' +
+      location +
+      '&estado=' +
+      (successful ? 'guardado' : 'no_disponible'),
   );
 }

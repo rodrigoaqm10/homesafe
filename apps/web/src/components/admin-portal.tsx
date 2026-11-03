@@ -204,6 +204,12 @@ export async function AdminPortal({
               Seguridad de mi cuenta ↗
             </Link>
           </div>
+          {status === 'conflicto' && (
+            <p className="error-notice" role="alert">
+              Otra persona modificó este registro. Revisa los datos actuales y
+              vuelve a editar.
+            </p>
+          )}{' '}
           {status === 'guardado' && (
             <p className="success-notice" role="status">
               El registro se guardó en tu comunidad.
@@ -296,6 +302,30 @@ export async function AdminPortal({
                           <tr key={u.id}>
                             <td>
                               <strong>{u.label}</strong>
+                              <details>
+                                <summary>Editar unidad</summary>
+                                <form
+                                  action={administer}
+                                  className="secure-form"
+                                >
+                                  {fields('edit_unit', u.id)}
+                                  <input
+                                    type="hidden"
+                                    name="expected_label"
+                                    value={u.label}
+                                  />
+                                  <label>
+                                    Identificador de unidad
+                                    <input
+                                      name="description"
+                                      defaultValue={u.label}
+                                      required
+                                      maxLength={60}
+                                    />
+                                  </label>
+                                  <SubmitButton>Guardar unidad ↗</SubmitButton>
+                                </form>
+                              </details>
                             </td>
                             <td>
                               {
@@ -327,7 +357,10 @@ export async function AdminPortal({
                   </details>
                 </section>
                 <section className="panel">
-                  <h2>Personas residentes</h2><p className="panel-note">Se muestran hasta 100 personas y 100 vínculos residenciales.</p>
+                  <h2>Personas residentes</h2>
+                  <p className="panel-note">
+                    Se muestran hasta 100 personas y 100 vínculos residenciales.
+                  </p>
                   {(residents.data ?? []).map((r) => (
                     <article className="private-record" key={r.id}>
                       <h3>{r.full_name}</h3>
@@ -343,6 +376,80 @@ export async function AdminPortal({
                       <p>
                         {r.email || 'Sin correo'} · {r.phone || 'Sin teléfono'}
                       </p>
+                      <details>
+                        <summary>Editar datos de contacto</summary>
+                        <form action={administer} className="secure-form">
+                          {fields('edit_resident', r.id)}
+                          <input
+                            type="hidden"
+                            name="expected_updated_at"
+                            value={r.updated_at ?? ''}
+                          />
+                          <label>
+                            Nombre completo
+                            <input
+                              name="description"
+                              defaultValue={r.full_name}
+                              required
+                              minLength={3}
+                              maxLength={160}
+                            />
+                          </label>
+                          <label>
+                            Correo de contacto
+                            <input
+                              type="email"
+                              name="email"
+                              defaultValue={r.email ?? ''}
+                              maxLength={254}
+                            />
+                          </label>
+                          <label>
+                            Teléfono
+                            <input
+                              type="tel"
+                              name="phone"
+                              defaultValue={r.phone ?? ''}
+                              maxLength={40}
+                            />
+                          </label>
+                          <p>
+                            Este correo es de contacto. No modifica el correo de
+                            inicio de sesión.
+                          </p>
+                          <SubmitButton>Guardar cambios ↗</SubmitButton>
+                        </form>
+                      </details>
+                      {(links.data ?? [])
+                        .filter((l) => l.resident_id === r.id)
+                        .map((l) => (
+                          <details key={l.id}>
+                            <summary>
+                              Editar relación con{' '}
+                              {labels[l.unit_id] ?? 'unidad'}
+                            </summary>
+                            <form action={administer} className="secure-form">
+                              {fields('edit_relationship', l.id)}
+                              <input
+                                type="hidden"
+                                name="expected_relationship"
+                                value={l.relationship}
+                              />
+                              <label>
+                                Relación
+                                <select
+                                  name="relationship"
+                                  defaultValue={l.relationship}
+                                >
+                                  <option value="owner">Propietario</option>
+                                  <option value="tenant">Arrendatario</option>
+                                  <option value="resident">Residente</option>
+                                </select>
+                              </label>
+                              <SubmitButton>Guardar relación ↗</SubmitButton>
+                            </form>
+                          </details>
+                        ))}
                     </article>
                   ))}
                   {!residents.data?.length && (
@@ -611,7 +718,12 @@ export async function AdminPortal({
                           <strong>{l.entity_type}</strong>
                           <small>{l.entity_id}</small>
                         </td>
-                        <td>{l.action}</td>
+                        <td>
+                          {l.action}
+                          {l.changed_fields?.length > 0 && (
+                            <small>Campos: {l.changed_fields.join(', ')}</small>
+                          )}
+                        </td>
                         <td>
                           {new Intl.DateTimeFormat('es-CL', {
                             dateStyle: 'short',
@@ -640,4 +752,3 @@ export async function AdminPortal({
     </div>
   );
 }
-
