@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { operate } from '@/app/portal/actions';
 import { createClient } from '@/lib/supabase/server';
 import { money } from '@/modules/finance/domain/money';
 import { portalSection } from '@/modules/identity/domain/portal-navigation';
@@ -12,6 +13,7 @@ import {
   VisitSection,
 } from './portal-operations';
 import { PortalShell, portalHref } from './portal-shell';
+import { SubmitButton } from './submit-button';
 export async function MemberPortal({
   member,
   section,
@@ -111,7 +113,35 @@ export async function MemberPortal({
       />
     );
   else if (current === 'comunicados')
-    content = <Announcements announcements={announcements.data ?? []} />;
+    content = (
+      <>
+        <Announcements announcements={announcements.data ?? []} />
+        {member.role === 'administrador' && (
+          <section className="panel">
+            <h2>Publicar comunicado</h2>
+            <form action={operate} className="secure-form">
+              <input type="hidden" name="membership_id" value={member.id} />
+              <input type="hidden" name="kind" value="publish" />
+              <input type="hidden" name="return_section" value="comunicados" />
+              <label>
+                Título
+                <input name="text" required minLength={5} maxLength={160} />
+              </label>
+              <label>
+                Mensaje
+                <textarea
+                  name="body"
+                  required
+                  minLength={5}
+                  maxLength={10000}
+                />
+              </label>
+              <SubmitButton>Publicar comunicado ↗</SubmitButton>
+            </form>
+          </section>
+        )}
+      </>
+    );
   else if (current === 'bitacora' && !resident) {
     const logs = await scope('audit_logs')
       .in('entity_type', ['visits', 'packages', 'incidents', 'announcements'])
@@ -354,4 +384,3 @@ export async function MemberPortal({
     </PortalShell>
   );
 }
-
