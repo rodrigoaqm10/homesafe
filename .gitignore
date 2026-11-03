@@ -1,0 +1,14 @@
+node_modules/
+.next/
+.vercel/
+.env*
+!**/.env.example
+*.tsbuildinfo
+tmp/
+output/
+supabase/setup/
+docs/source/
+HomeSafe_*.md
+docs/*preview*.png
+docs/panel-preview.png
+.DS_Store

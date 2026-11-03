@@ -1,0 +1,10 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.4/schema.json",
+  "files": { "includes": ["src/**", "tests/**"] },
+  "linter": {
+    "enabled": true,
+    "rules": { "preset": "recommended", "a11y": { "noAutofocus": "off" } }
+  },
+  "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2 },
+  "javascript": { "formatter": { "quoteStyle": "single" } }
+}

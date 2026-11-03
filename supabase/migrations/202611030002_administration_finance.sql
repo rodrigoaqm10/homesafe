@@ -1,0 +1,70 @@
+-- Administrative records and manual finance. No card or bank credentials.
+begin;
+grant insert(organization_id,community_id,label) on public.units to authenticated;
+create policy units_admin_create on public.units for insert to authenticated with check(homesafe_private.has_role(organization_id,community_id,array['administrador']));
+create trigger units_audit after insert on public.units for each row execute function homesafe_private.audit_change();
+create table public.residents(id uuid primary key default gen_random_uuid(),organization_id uuid not null,community_id uuid not null,full_name text not null check(char_length(trim(full_name)) between 3 and 160),email text check(email is null or char_length(email)<=254),phone text check(phone is null or char_length(phone)<=40),created_at timestamptz not null default now(),foreign key(organization_id,community_id) references public.communities(organization_id,id),unique(organization_id,community_id,id));
+create table public.unit_residents(id uuid primary key default gen_random_uuid(),organization_id uuid not null,community_id uuid not null,unit_id uuid not null,resident_id uuid not null,relationship text not null check(relationship in ('owner','tenant','resident')),created_at timestamptz not null default now(),foreign key(organization_id,community_id,unit_id) references public.units(organization_id,community_id,id),foreign key(organization_id,community_id,resident_id) references public.residents(organization_id,community_id,id),unique(unit_id,resident_id));
+create table public.common_expense_periods(id uuid primary key default gen_random_uuid(),organization_id uuid not null,community_id uuid not null,year integer not null check(year between 2020 and 2200),month integer not null check(month between 1 and 12),created_at timestamptz not null default now(),foreign key(organization_id,community_id) references public.communities(organization_id,id),unique(organization_id,community_id,id),unique(community_id,year,month));
+create table public.common_expense_charges(id uuid primary key default gen_random_uuid(),organization_id uuid not null,community_id uuid not null,unit_id uuid not null,period_id uuid not null,description text not null check(char_length(trim(description)) between 3 and 200),amount_clp bigint not null check(amount_clp between 1 and 9000000000000),due_date date not null,created_by uuid not null default auth.uid() references public.profiles(id),created_at timestamptz not null default now(),voided_at timestamptz,foreign key(organization_id,community_id,unit_id) references public.units(organization_id,community_id,id),foreign key(organization_id,community_id,period_id) references public.common_expense_periods(organization_id,community_id,id),unique(organization_id,community_id,id));
+create table public.payment_ledger(id uuid primary key default gen_random_uuid(),organization_id uuid not null,community_id uuid not null,charge_id uuid not null,amount_clp bigint not null check(amount_clp<>0 and abs(amount_clp)<=9000000000000),kind text not null check(kind in ('receipt','reversal')),method text not null check(method in ('transfer','cash','other')),reference text not null check(char_length(trim(reference)) between 3 and 120),reversal_of uuid unique references public.payment_ledger(id),created_by uuid not null default auth.uid() references public.profiles(id),created_at timestamptz not null default now(),foreign key(organization_id,community_id,charge_id) references public.common_expense_charges(organization_id,community_id,id),check((kind='receipt' and amount_clp>0 and reversal_of is null) or (kind='reversal' and amount_clp<0 and reversal_of is not null)));
+create table public.expenses(id uuid primary key default gen_random_uuid(),organization_id uuid not null,community_id uuid not null,description text not null check(char_length(trim(description)) between 3 and 200),category text not null check(category in ('maintenance','utilities','staff','administration','other')),amount_clp bigint not null check(amount_clp between 1 and 9000000000000),expense_date date not null,created_by uuid not null default auth.uid() references public.profiles(id),created_at timestamptz not null default now(),voided_at timestamptz,foreign key(organization_id,community_id) references public.communities(organization_id,id));
+create index residents_scope on public.residents(community_id,full_name);
+create index unit_residents_scope on public.unit_residents(community_id,unit_id);
+create index charges_scope on public.common_expense_charges(community_id,unit_id,due_date);
+create index payments_charge on public.payment_ledger(charge_id,created_at);
+create index expenses_scope on public.expenses(community_id,expense_date);
+revoke all on public.residents,public.unit_residents,public.common_expense_periods,public.common_expense_charges,public.payment_ledger,public.expenses from anon,authenticated;
+grant select on public.residents,public.unit_residents,public.common_expense_periods,public.common_expense_charges,public.payment_ledger,public.expenses to authenticated;
+grant insert(organization_id,community_id,description,category,amount_clp,expense_date) on public.expenses to authenticated;
+alter table public.residents enable row level security;
+alter table public.unit_residents enable row level security;
+alter table public.common_expense_periods enable row level security;
+alter table public.common_expense_charges enable row level security;
+alter table public.payment_ledger enable row level security;
+alter table public.expenses enable row level security;
+create policy residents_admin on public.residents for select to authenticated using(homesafe_private.has_role(organization_id,community_id,array['administrador']));
+create policy unit_residents_admin on public.unit_residents for select to authenticated using(homesafe_private.has_role(organization_id,community_id,array['administrador']));
+create policy periods_read on public.common_expense_periods for select to authenticated using(homesafe_private.has_role(organization_id,community_id,array['administrador','residente']));
+create policy charges_read on public.common_expense_charges for select to authenticated using(homesafe_private.has_role(organization_id,community_id,array['administrador']) or homesafe_private.owns_unit(organization_id,community_id,unit_id));
+create policy ledger_read on public.payment_ledger for select to authenticated using(homesafe_private.has_role(organization_id,community_id,array['administrador']) or exists(select 1 from public.common_expense_charges c where c.id=charge_id and homesafe_private.owns_unit(c.organization_id,c.community_id,c.unit_id)));
+create policy expenses_read on public.expenses for select to authenticated using(homesafe_private.has_role(organization_id,community_id,array['administrador']));
+create policy expenses_create on public.expenses for insert to authenticated with check(created_by=(select auth.uid()) and voided_at is null and homesafe_private.has_role(organization_id,community_id,array['administrador']));
+create trigger residents_audit after insert on public.residents for each row execute function homesafe_private.audit_change();
+create trigger unit_residents_audit after insert on public.unit_residents for each row execute function homesafe_private.audit_change();
+create trigger periods_audit after insert on public.common_expense_periods for each row execute function homesafe_private.audit_change();
+create trigger charges_audit after insert or update on public.common_expense_charges for each row execute function homesafe_private.audit_change();
+create trigger payments_audit after insert on public.payment_ledger for each row execute function homesafe_private.audit_change();
+create trigger expenses_audit after insert or update on public.expenses for each row execute function homesafe_private.audit_change();
+create function public.register_resident(org uuid,community uuid,unit uuid,resident_name text,resident_email text,resident_phone text,relation text) returns uuid language plpgsql security definer set search_path='' as $$declare rid uuid;begin
+ if not homesafe_private.has_role(org,community,array['administrador']) then raise exception 'Operation not permitted' using errcode='42501';end if;
+ if not exists(select 1 from public.units where id=unit and organization_id=org and community_id=community) then raise exception 'Invalid unit' using errcode='23503';end if;
+ insert into public.residents(organization_id,community_id,full_name,email,phone) values(org,community,trim(resident_name),nullif(trim(resident_email),''),nullif(trim(resident_phone),'')) returning id into rid;
+ insert into public.unit_residents(organization_id,community_id,unit_id,resident_id,relationship) values(org,community,unit,rid,relation);return rid;end;$$;
+create function public.create_common_charge(org uuid,community uuid,unit uuid,period_year integer,period_month integer,charge_description text,charge_amount bigint,charge_due date) returns uuid language plpgsql security definer set search_path='' as $$declare pid uuid;cid uuid;begin
+ if not homesafe_private.has_role(org,community,array['administrador']) then raise exception 'Operation not permitted' using errcode='42501';end if;
+ if not exists(select 1 from public.units where id=unit and organization_id=org and community_id=community) then raise exception 'Invalid unit' using errcode='23503';end if;
+ insert into public.common_expense_periods(organization_id,community_id,year,month) values(org,community,period_year,period_month) on conflict(community_id,year,month) do update set year=excluded.year returning id into pid;
+ insert into public.common_expense_charges(organization_id,community_id,unit_id,period_id,description,amount_clp,due_date) values(org,community,unit,pid,charge_description,charge_amount,charge_due) returning id into cid;return cid;end;$$;
+create function public.register_manual_payment(target_charge uuid,payment_amount bigint,payment_method text,payment_reference text) returns uuid language plpgsql security definer set search_path='' as $$declare c public.common_expense_charges;paid numeric;pid uuid;begin
+ select * into c from public.common_expense_charges where id=target_charge for update;
+ if not found or not homesafe_private.has_role(c.organization_id,c.community_id,array['administrador']) then raise exception 'Operation not permitted' using errcode='42501';end if;
+ select coalesce(sum(amount_clp),0) into paid from public.payment_ledger where charge_id=c.id;
+ if c.voided_at is not null or payment_amount<=0 or paid+payment_amount>c.amount_clp then raise exception 'Invalid amount or closed charge' using errcode='23514';end if;
+ insert into public.payment_ledger(organization_id,community_id,charge_id,amount_clp,kind,method,reference) values(c.organization_id,c.community_id,c.id,payment_amount,'receipt',payment_method,payment_reference) returning id into pid;return pid;end;$$;
+create function public.reverse_manual_payment(target_payment uuid,reason text) returns uuid language plpgsql security definer set search_path='' as $$declare p public.payment_ledger;c public.common_expense_charges;rid uuid;begin
+ select * into p from public.payment_ledger where id=target_payment;
+ if not found then raise exception 'Operation not permitted' using errcode='42501';end if;
+ select * into c from public.common_expense_charges where id=p.charge_id for update;
+ if not homesafe_private.has_role(c.organization_id,c.community_id,array['administrador']) then raise exception 'Operation not permitted' using errcode='42501';end if;
+ if p.kind<>'receipt' or exists(select 1 from public.payment_ledger where reversal_of=p.id) then raise exception 'Payment already reversed' using errcode='23514';end if;
+ insert into public.payment_ledger(organization_id,community_id,charge_id,amount_clp,kind,method,reference,reversal_of) values(p.organization_id,p.community_id,p.charge_id,-p.amount_clp,'reversal',p.method,reason,p.id) returning id into rid;return rid;end;$$;
+create function public.void_financial_record(record_type text,record_id uuid) returns void language plpgsql security definer set search_path='' as $$declare org uuid;community uuid;begin
+ if record_type='charge' then select organization_id,community_id into org,community from public.common_expense_charges where id=record_id for update;
+ elsif record_type='expense' then select organization_id,community_id into org,community from public.expenses where id=record_id for update;else raise exception 'Invalid record';end if;
+ if org is null or not homesafe_private.has_role(org,community,array['administrador']) then raise exception 'Operation not permitted' using errcode='42501';end if;
+ if record_type='charge' then if (select coalesce(sum(amount_clp),0) from public.payment_ledger where charge_id=record_id)<>0 then raise exception 'Reverse payments first' using errcode='23514';end if;update public.common_expense_charges set voided_at=now() where id=record_id and voided_at is null;
+ else update public.expenses set voided_at=now() where id=record_id and voided_at is null;end if;end;$$;
+revoke all on function public.register_resident(uuid,uuid,uuid,text,text,text,text),public.create_common_charge(uuid,uuid,uuid,integer,integer,text,bigint,date),public.register_manual_payment(uuid,bigint,text,text),public.reverse_manual_payment(uuid,text),public.void_financial_record(text,uuid) from public,anon;
+grant execute on function public.register_resident(uuid,uuid,uuid,text,text,text,text),public.create_common_charge(uuid,uuid,uuid,integer,integer,text,bigint,date),public.register_manual_payment(uuid,bigint,text,text),public.reverse_manual_payment(uuid,text),public.void_financial_record(text,uuid) to authenticated;
+commit;
