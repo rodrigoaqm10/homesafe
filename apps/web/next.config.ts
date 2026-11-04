@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   turbopack: { root: process.cwd() },
+  serverExternalPackages: ['pdfkit'],
   poweredByHeader: false,
   async headers() {
     return [{ source: '/:path*', headers: [
