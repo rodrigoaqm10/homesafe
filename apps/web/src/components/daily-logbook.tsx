@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import type { Membership } from '@/modules/identity/infrastructure/session';
 import { dateLabel } from './portal-operations';
 import { PortalShell } from './portal-shell';
+import { ShiftSummary } from './shift-summary';
 import { SubmitButton } from './submit-button';
 
 const labels: Record<string, string> = {
@@ -101,6 +102,14 @@ export async function DailyLogbook({
       subtitle="Anotaciones, comunicados y movimientos del día. Horario de Chile."
       status={status}
     >
+      {hasPro &&
+        process.env.OPENAI_API_KEY &&
+        process.env.HOME_SAFE_AI_MODEL && (
+          <ShiftSummary
+            membershipId={member.id}
+            canSave={member.role === 'conserje'}
+          />
+        )}
       {member.role === 'conserje' && (
         <section className="panel logbook-entry">
           <h2>Registrar una novedad</h2>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { operate } from '@/app/portal/actions';
+import { emailReceipt } from '@/app/portal/receipt-actions';
 import { createClient } from '@/lib/supabase/server';
 import { money } from '@/modules/finance/domain/money';
 import { portalSection } from '@/modules/identity/domain/portal-navigation';
@@ -207,6 +208,11 @@ export async function MemberPortal({
               <div className="portal-grid">
                 <section className="panel">
                   <h2>Cobros de mi unidad</h2>
+                  <p className="panel-note">
+                    El pago en línea estará disponible cuando se habilite la
+                    pasarela. Por ahora, solicita a administración las
+                    instrucciones de pago.
+                  </p>
                   {charges.data?.map((c) => (
                     <article className="private-record" key={c.id}>
                       <span className="badge">
@@ -223,6 +229,17 @@ export async function MemberPortal({
                         {money(c.paid_clp)}
                       </p>
                       <strong>Saldo {money(c.balance_clp)}</strong>
+                      {!c.voided_at && BigInt(c.balance_clp) > BigInt(0) && (
+                        <div className="record-actions">
+                          <button
+                            type="button"
+                            className="button primary"
+                            disabled
+                          >
+                            Pagar en línea
+                          </button>
+                        </div>
+                      )}
                     </article>
                   ))}
                   {!charges.data?.length && (
@@ -239,6 +256,17 @@ export async function MemberPortal({
                 </section>
                 <section className="panel">
                   <h2>Historial de pagos</h2>
+                  {status === 'comprobante_enviado' && (
+                    <p role="status" className="success-notice">
+                      Comprobante enviado a tu correo.
+                    </p>
+                  )}
+                  {status === 'comprobante_error' && (
+                    <p role="alert" className="error-notice">
+                      No se pudo enviar el comprobante. Revisa que tu correo
+                      esté verificado o descárgalo aquí.
+                    </p>
+                  )}
                   {history.data?.map((p) => (
                     <article className="private-record" key={p.id}>
                       <span className="badge">
@@ -249,6 +277,33 @@ export async function MemberPortal({
                         {p.charge_description} · {dateLabel(p.created_at)}
                       </p>
                       <p>Referencia: {p.reference}</p>
+                      {p.kind === 'receipt' && (
+                        <div className="record-actions">
+                          <a
+                            className="text-link"
+                            href={
+                              '/portal/' + member.id + '/comprobantes/' + p.id
+                            }
+                          >
+                            Descargar comprobante
+                          </a>
+                          <form action={emailReceipt}>
+                            <input
+                              type="hidden"
+                              name="membership_id"
+                              value={member.id}
+                            />
+                            <input
+                              type="hidden"
+                              name="payment_id"
+                              value={p.id}
+                            />
+                            <button className="text-link" type="submit">
+                              Enviar a mi correo
+                            </button>
+                          </form>
+                        </div>
+                      )}
                     </article>
                   ))}
                   {!history.data?.length && (

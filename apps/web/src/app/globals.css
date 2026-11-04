@@ -2256,3 +2256,9 @@ html[data-theme="dark"] .private-record {
 .membership-cta {
   padding: 32px 6%;
 }
+
+.shift-draft {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: inherit;
+}

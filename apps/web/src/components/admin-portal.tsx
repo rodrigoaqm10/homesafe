@@ -503,6 +503,25 @@ export async function AdminPortal({
               </section>
             </div>
           )}
+          {current === 'finanzas' && (
+            <section className="panel">
+              <h2>Exportar finanzas</h2>
+              <div className="record-actions">
+                <a
+                  className="button primary"
+                  href={base + '/exportar?formato=pdf'}
+                >
+                  Descargar PDF
+                </a>
+                <a
+                  className="button primary"
+                  href={base + '/exportar?formato=xlsx'}
+                >
+                  Descargar Excel
+                </a>
+              </div>
+            </section>
+          )}
           {current === 'finanzas' && financialReady && (
             <>
               <div className="metric-grid">
