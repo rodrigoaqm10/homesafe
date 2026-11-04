@@ -2236,3 +2236,23 @@ html[data-theme="dark"] .private-record {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
+
+.picker-header {
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.picker-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-inline-start: auto;
+}
+.picker-actions .theme-toggle {
+  margin-inline-start: 0;
+}
+.picker-actions form {
+  margin: 0;
+}
+.membership-cta {
+  padding: 32px 6%;
+}

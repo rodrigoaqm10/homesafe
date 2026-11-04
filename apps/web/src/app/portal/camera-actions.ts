@@ -1,12 +1,14 @@
 'use server';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { hasCommunityPro } from '@/modules/identity/infrastructure/community-plan';
 import { requireMembership } from '@/modules/identity/infrastructure/session';
 export async function cameraAction(form: FormData) {
   const { client, member } = await requireMembership(
     String(form.get('membership_id') ?? ''),
   );
-  if (member.role === 'residente') redirect('/portal');
+  if (member.role === 'residente' || !(await hasCommunityPro(client, member)))
+    redirect('/portal/' + member.id);
   const scope = {
     organization_id: member.organization_id,
     community_id: member.community_id,

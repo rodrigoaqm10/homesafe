@@ -14,10 +14,12 @@ import {
 import { PortalShell, portalHref } from './portal-shell';
 import { SubmitButton } from './submit-button';
 export async function MemberPortal({
+  hasPro = false,
   member,
   section,
   status,
 }: {
+  hasPro?: boolean;
   member: Membership;
   section?: string;
   status?: string;
@@ -350,6 +352,7 @@ export async function MemberPortal({
   }
   return (
     <PortalShell
+      hasPro={hasPro}
       member={member}
       community={community.data?.name ?? 'Mi comunidad'}
       unit={unit}

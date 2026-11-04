@@ -1,7 +1,9 @@
+import { redirect } from 'next/navigation';
 import { AdminPortal } from '@/components/admin-portal';
 import { CameraPortal } from '@/components/camera-portal';
 import { DailyLogbook } from '@/components/daily-logbook';
 import { MemberPortal } from '@/components/member-portal';
+import { hasCommunityPro } from '@/modules/identity/infrastructure/community-plan';
 import { requireMembership } from '@/modules/identity/infrastructure/session';
 export const metadata = { title: 'Mi comunidad' };
 export default async function Page({
@@ -18,7 +20,9 @@ export default async function Page({
   }>;
 }) {
   const { membresia } = await params;
-  const { member } = await requireMembership(membresia);
+  const { client, member } = await requireMembership(membresia);
+  const hasPro =
+    member.role !== 'residente' && (await hasCommunityPro(client, member));
   const { dia, pagina, estado, seccion, operacion } = await searchParams;
   if (
     member.role !== 'residente' &&
@@ -26,13 +30,22 @@ export default async function Page({
       (seccion === 'operaciones' && operacion === 'bitacora'))
   )
     return (
-      <DailyLogbook member={member} status={estado} day={dia} page={pagina} />
+      <DailyLogbook
+        hasPro={hasPro}
+        member={member}
+        status={estado}
+        day={dia}
+        page={pagina}
+      />
     );
-  if (seccion === 'camaras' && member.role !== 'residente')
+  if (seccion === 'camaras' || operacion === 'camaras') {
+    if (!hasPro) redirect('/portal/' + member.id);
     return <CameraPortal member={member} status={estado} />;
+  }
   if (member.role === 'administrador' && seccion !== 'operaciones')
     return (
       <AdminPortal
+        hasPro={hasPro}
         member={member}
         section={seccion ?? 'inicio'}
         status={estado}
@@ -40,6 +53,7 @@ export default async function Page({
     );
   return (
     <MemberPortal
+      hasPro={hasPro}
       member={member}
       section={member.role === 'administrador' ? operacion : seccion}
       status={estado}

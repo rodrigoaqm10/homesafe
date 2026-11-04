@@ -20,12 +20,14 @@ export default async function Portal() {
         <Link className="brand" href="/">
           HOME SAFE
         </Link>
-        <form action={logout}>
-          <button className="text-link" type="submit">
-            Cerrar sesión
-          </button>
-        </form>
-        <ThemeToggle />
+        <div className="picker-actions">
+          <form action={logout}>
+            <button className="text-link" type="submit">
+              Cerrar sesión
+            </button>
+          </form>
+          <ThemeToggle />
+        </div>
       </header>
       <section className="picker-intro">
         <span className="eyebrow">ACCESO VERIFICADO</span>

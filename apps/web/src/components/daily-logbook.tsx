@@ -40,11 +40,13 @@ type LogEntry = {
 };
 const pageSize = 50;
 export async function DailyLogbook({
+  hasPro = false,
   member,
   status,
   day,
   page,
 }: {
+  hasPro?: boolean;
   member: Membership;
   status?: string;
   day?: string;
@@ -91,6 +93,7 @@ export async function DailyLogbook({
     '/portal/' + member.id + '?seccion=bitacora&dia=' + selected + '&pagina=';
   return (
     <PortalShell
+      hasPro={hasPro}
       member={member}
       community={community.data?.name ?? 'Mi comunidad'}
       section="bitacora"

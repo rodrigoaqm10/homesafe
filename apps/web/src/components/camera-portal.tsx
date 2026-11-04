@@ -47,6 +47,7 @@ export async function CameraPortal({
   const unavailable = community.error || cameras.error || events.error;
   return (
     <PortalShell
+      hasPro
       member={member}
       community={community.data?.name ?? 'Mi comunidad'}
       section="camaras"

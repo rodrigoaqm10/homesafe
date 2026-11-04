@@ -7,10 +7,12 @@ import { createClient } from '@/lib/supabase/server';
 import { money } from '@/modules/finance/domain/money';
 import type { Membership } from '@/modules/identity/infrastructure/session';
 export async function AdminPortal({
+  hasPro = false,
   member,
   section,
   status,
 }: {
+  hasPro?: boolean;
   member: Membership;
   section: string;
   status?: string;
@@ -130,7 +132,7 @@ export async function AdminPortal({
     ['registros', 'Unidades y residentes'],
     ['auditoria', 'Auditoría'],
     ['operaciones', 'Supervisión operativa'],
-    ['camaras', 'Cámaras'],
+    ...(hasPro ? [['camaras', 'Cámaras']] : []),
     ['bitacora', 'Bitácora diaria'],
   ];
   return (

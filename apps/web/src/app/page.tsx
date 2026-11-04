@@ -81,6 +81,7 @@ export default function Home() {
           <a href="#experiencia">La experiencia</a>
           <a href="#plataforma">Plataforma</a>
           <a href="#confianza">Confianza</a>
+          <Link href="/membresia">Membresía</Link>
         </nav>
         <Link className="header-access" href="/acceso">
           Acceso privado
@@ -266,6 +267,12 @@ export default function Home() {
             mantiene durante toda la vida de la plataforma.
           </p>
         </div>
+      </section>
+      <section className="membership-cta">
+        <h2>Planes para tu comunidad</h2>
+        <Link className="button primary" href="/membresia">
+          Consultar membresía
+        </Link>
       </section>
       <footer className="site-footer">
         <Link className="brand" href="/">

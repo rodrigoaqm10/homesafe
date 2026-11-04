@@ -15,6 +15,7 @@ export function portalHref(member: Membership, section: string) {
     : base + '?seccion=' + section;
 }
 export function PortalShell({
+  hasPro = false,
   member,
   community,
   unit,
@@ -24,6 +25,7 @@ export function PortalShell({
   status,
   children,
 }: {
+  hasPro?: boolean;
   member: Membership;
   community: string;
   unit?: string;
@@ -34,7 +36,11 @@ export function PortalShell({
   children: React.ReactNode;
 }) {
   const resident = member.role === 'residente';
-  const navigation = resident ? residentNavigation : conciergeNavigation;
+  const navigation = resident
+    ? residentNavigation
+    : conciergeNavigation.filter(
+        ([section]) => section !== 'camaras' || hasPro,
+      );
   const profile = resident
     ? 'Residente'
     : member.role === 'administrador'

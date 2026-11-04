@@ -6,6 +6,7 @@ insert into public.units(id,organization_id,community_id,label) values('30000000
 insert into public.community_memberships(organization_id,community_id,profile_id,role,unit_id) values
  ('10000000-0000-0000-0000-000000000051','20000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000051','administrador',null),('10000000-0000-0000-0000-000000000051','20000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000052','conserje',null),('10000000-0000-0000-0000-000000000051','20000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000053','residente','30000000-0000-0000-0000-000000000051');
 insert into public.security_cameras(id,organization_id,community_id,label,location) values('40000000-0000-0000-0000-000000000052','10000000-0000-0000-0000-000000000052','20000000-0000-0000-0000-000000000052','Cámara externa','Acceso');
+update public.communities set pro_until=now()+interval '6 months' where id='20000000-0000-0000-0000-000000000051';
 set local role authenticated;
 select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-000000000051","aal":"aal2"}',true);
 insert into public.security_cameras(organization_id,community_id,label,location) values('10000000-0000-0000-0000-000000000051','20000000-0000-0000-0000-000000000051','Entrada principal','Vestíbulo');
@@ -27,6 +28,17 @@ select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-00000000
 do $$begin assert (select count(*) from public.security_camera_status)=0,'Admin without MFA can view';end;$$;
 select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-000000000053","aal":"aal1"}',true);
 do $$begin assert (select count(*) from public.security_camera_status)=0,'Resident can view inventory';assert (select count(*) from public.security_camera_history)=0,'Resident can view history';end;$$;
+reset role;
+update public.communities set pro_until=now()-interval '1 second' where id='20000000-0000-0000-0000-000000000051';
+set local role authenticated;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-000000000051","aal":"aal2"}',true);
+do $$begin
+ assert (select count(*) from public.security_camera_status)=0,'Expired Pro can see cameras';
+ assert (select count(*) from public.security_camera_history)=0,'Expired Pro can see camera history';
+ assert (select count(*) from public.audit_logs where entity_type in ('security_cameras','security_camera_events'))=0,'Expired Pro can see camera audit';
+ assert (select count(*) from public.daily_logbook('10000000-0000-0000-0000-000000000051','20000000-0000-0000-0000-000000000051',(now() at time zone 'America/Santiago')::date))=0,'Expired Pro can see camera logbook entries';
+ begin insert into public.security_cameras(organization_id,community_id,label,location) values('10000000-0000-0000-0000-000000000051','20000000-0000-0000-0000-000000000051','Camera bloqueada','Vestíbulo');raise exception 'Expired Pro can write cameras';exception when insufficient_privilege then null;end;
+end;$$;
 set local role anon;
 do $$begin begin perform 1 from public.security_camera_status;raise exception 'Anonymous access allowed';exception when insufficient_privilege then null;end;end;$$;
 rollback;
