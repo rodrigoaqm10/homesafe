@@ -2,6 +2,7 @@
 import { useActionState } from 'react';
 import { SubmitButton } from '@/components/submit-button';
 import { sendMembershipInquiry } from './actions';
+import { membershipPlans } from './plans';
 
 const errors: Record<string, string> = {
   invalid: 'Revisa los datos y selecciona un plan.',
@@ -55,9 +56,11 @@ export function InquiryForm() {
           <option value="" disabled>
             Selecciona una opción
           </option>
-          <option value="normal">Normal</option>
-          <option value="pro-6">Pro · 6 meses</option>
-          <option value="pro-12">Pro · 12 meses</option>
+          {membershipPlans.map(({ id, tier, months }) => (
+            <option key={id} value={id}>
+              {tier} · {months} meses
+            </option>
+          ))}
         </select>
       </label>
       <label>

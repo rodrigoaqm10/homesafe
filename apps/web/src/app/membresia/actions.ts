@@ -1,13 +1,9 @@
 'use server';
 import { headers } from 'next/headers';
 import nodemailer from 'nodemailer';
+import { membershipPlans } from './plans';
 
 const inbox = 'zadar0610@gmail.com';
-const options = new Map([
-  ['normal', 'Normal'],
-  ['pro-6', 'Pro · 6 meses'],
-  ['pro-12', 'Pro · 12 meses'],
-]);
 const recent = new Map<string, number>();
 const cooldown = 60_000;
 
@@ -19,7 +15,7 @@ export async function sendMembershipInquiry(
   const community = String(form.get('community') ?? '').trim();
   const email = String(form.get('email') ?? '').trim();
   const message = String(form.get('message') ?? '').trim();
-  const plan = options.get(String(form.get('plan') ?? ''));
+  const plan = membershipPlans.find(({ id }) => id === form.get('plan'));
   if (
     form.get('website') ||
     !plan ||
@@ -61,7 +57,7 @@ export async function sendMembershipInquiry(
       replyTo: { name, address: email },
       subject: 'Consulta de membresía Home Safe',
       text: [
-        'Plan: ' + plan,
+        'Plan: ' + plan.tier + ' · ' + plan.months + ' meses',
         'Nombre: ' + name,
         'Comunidad: ' + community,
         'Correo: ' + email,
