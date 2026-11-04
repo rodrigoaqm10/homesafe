@@ -16,8 +16,8 @@ export async function generateShiftSummary(
     return {
       error: 'La función requiere acceso de personal y un plan Pro vigente.',
     };
-  const key = process.env.OPENAI_API_KEY;
-  const model = process.env.HOME_SAFE_AI_MODEL;
+  const key = process.env.OPENAI_API_KEY?.trim();
+  const model = process.env.HOME_SAFE_AI_MODEL?.trim();
   if (!key || !model)
     return { error: 'La generación de resúmenes aún no está habilitada.' };
   const timestamp = Date.now();
@@ -38,6 +38,7 @@ export async function generateShiftSummary(
     month: '2-digit',
     day: '2-digit',
   }).format(timestamp);
+  let fallback: string | undefined;
   try {
     const [parcels, visits, incidents, inside] = await Promise.all([
       scope('packages').eq('status', 'received'),
@@ -54,6 +55,13 @@ export async function generateShiftSummary(
       )
     )
       throw new Error('COUNTS_UNAVAILABLE');
+    fallback = [
+      'Resumen de turno · ' + today,
+      'Encomiendas por retirar: ' + parcels.count,
+      'Visitas autorizadas vigentes: ' + visits.count,
+      'Visitas dentro: ' + inside.count,
+      'Solicitudes activas: ' + incidents.count,
+    ].join('\n');
     const response = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
       headers: {
@@ -76,7 +84,32 @@ export async function generateShiftSummary(
       }),
       signal: AbortSignal.timeout(15000),
     });
-    if (!response.ok) throw new Error('AI_UNAVAILABLE');
+    if (!response.ok) {
+      const payload = (await response.json().catch(() => null)) as {
+        error?: { code?: string };
+      } | null;
+      const code = payload?.error?.code;
+      const reason =
+        code === 'insufficient_quota' || code === 'billing_hard_limit_reached'
+          ? 'OpenAI indicó que el proyecto no tiene cuota disponible. Revisa la facturación y el saldo de la API.'
+          : response.status === 401
+            ? 'OpenAI rechazó la clave. Revisa OPENAI_API_KEY en Vercel y vuelve a desplegar.'
+            : response.status === 403 || response.status === 404
+              ? 'OpenAI no permitió usar el modelo. Revisa HOME_SAFE_AI_MODEL y los permisos del proyecto.'
+              : response.status === 429
+                ? 'OpenAI limitó temporalmente las solicitudes. Intenta más tarde.'
+                : 'OpenAI no pudo completar la solicitud. Intenta más tarde.';
+      console.warn('shift_summary_provider_failed', {
+        status: response.status,
+        requestId: response.headers.get('x-request-id'),
+      });
+      return {
+        draft: fallback,
+        error:
+          reason +
+          ' Puedes editar el borrador preparado con los conteos de Home Safe.',
+      };
+    }
     const payload = (await response.json()) as {
       status?: string;
       output?: { type: string; content?: { type: string; text?: string }[] }[];
@@ -92,8 +125,18 @@ export async function generateShiftSummary(
       throw new Error('EMPTY_DRAFT');
     return { draft: draft.slice(0, 2000) };
   } catch {
-    return {
-      error: 'No se pudo generar el borrador. Intenta de nuevo en un minuto.',
-    };
+    console.warn('shift_summary_failed', {
+      stage: fallback ? 'provider' : 'counts',
+    });
+    return fallback
+      ? {
+          draft: fallback,
+          error:
+            'La IA no devolvió un borrador utilizable. Puedes editar el borrador preparado con los conteos de Home Safe.',
+        }
+      : {
+          error:
+            'No se pudieron consultar los conteos del turno. Intenta de nuevo en un minuto.',
+        };
   }
 }
