@@ -78,9 +78,9 @@ export async function MemberPortal({
     announcements,
   ].some((r) => r.error);
   const names: Record<string, string> = {
-    inicio: 'Bienvenido a tu hogar.',
-    cuenta: 'Tu cuenta, con claridad.',
-    recepcion: 'Cada llegada, en buenas manos.',
+    inicio: 'Mi hogar',
+    cuenta: 'Mi cuenta',
+    recepcion: 'Recepción',
     visitas: resident ? 'Tus visitas.' : 'Visitas y accesos.',
     encomiendas: resident ? 'Tus encomiendas.' : 'Recepción de encomiendas.',
     solicitudes: resident
@@ -177,13 +177,13 @@ export async function MemberPortal({
               <span className="eyebrow">MI UNIDAD · {unit}</span>
               <h2>
                 {BigInt(balance.outstanding_clp) > BigInt(0)
-                  ? 'Tu próximo paso, al día.'
-                  : 'La tranquilidad de estar al día.'}
+                  ? 'Saldo pendiente'
+                  : 'Estás al día'}
               </h2>
               <span className="balance-amount">
                 {money(balance.outstanding_clp)}
               </span>
-              <p>Saldo pendiente de tu unidad</p>
+              <p>Cuenta de tu unidad</p>
               <div className="account-totals">
                 <span>
                   Total emitido<strong>{money(balance.billed_clp)}</strong>
@@ -375,14 +375,7 @@ export async function MemberPortal({
     ]);
     content = (
       <>
-        <section className="reception-banner">
-          <span className="eyebrow">RECEPCIÓN · EN TIEMPO REAL</span>
-          <h2>El cuidado está en cada detalle.</h2>
-          <p>
-            Coordina las llegadas, las entregas y la atención diaria de la
-            comunidad.
-          </p>
-        </section>
+        <h2 className="dashboard-section-title">Pendientes del turno</h2>
         <div className="role-shortcuts">
           {[
             ['visitas', 'Visitas vigentes'],

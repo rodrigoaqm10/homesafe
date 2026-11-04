@@ -82,9 +82,6 @@ export function PortalShell({
         <div className="sidebar-bottom">
           <span className="status-dot" />
           {profile}
-          <p>
-            {resident ? 'Tu hogar, conectado.' : 'Cada turno, bien acompañado.'}
-          </p>
           <Link href="/portal"> Mis accesos</Link>
         </div>
       </aside>

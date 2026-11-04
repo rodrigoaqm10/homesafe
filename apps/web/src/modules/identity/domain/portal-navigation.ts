@@ -8,11 +8,11 @@ export const residentNavigation = [
 ] as const;
 export const conciergeNavigation = [
   ['recepcion', 'Recepción'],
-  ['camaras', 'Cámaras'],
   ['visitas', 'Visitas y accesos'],
   ['encomiendas', 'Encomiendas'],
   ['solicitudes', 'Solicitudes'],
-  ['bitacora', 'Bitácora de actividad'],
+  ['bitacora', 'Bitácora'],
+  ['camaras', 'Cámaras'],
   ['comunicados', 'Comunicados'],
 ] as const;
 export function portalSection(role: string, value: string | undefined) {

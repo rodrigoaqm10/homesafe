@@ -68,6 +68,23 @@ export async function AdminPortal({
   const collected = BigInt(summary?.collected_clp ?? 0);
   const spent = BigInt(summary?.expenses_clp ?? 0);
   const financialReady = ready && !summaryError && Boolean(summary);
+  const operationalCounts =
+    current === 'inicio'
+      ? await Promise.all([
+          client
+            .from('incidents')
+            .select('id', { head: true, count: 'exact' })
+            .eq('organization_id', member.organization_id)
+            .eq('community_id', member.community_id)
+            .in('status', ['open', 'in_progress']),
+          client
+            .from('packages')
+            .select('id', { head: true, count: 'exact' })
+            .eq('organization_id', member.organization_id)
+            .eq('community_id', member.community_id)
+            .eq('status', 'received'),
+        ])
+      : [];
   function fields(operation: string, recordId?: string) {
     return (
       <>
@@ -127,7 +144,7 @@ export async function AdminPortal({
     );
   }
   const modules = [
-    ['inicio', 'Visión general'],
+    ['inicio', 'Dashboard'],
     ['finanzas', 'Finanzas'],
     ['registros', 'Unidades y residentes'],
     ['auditoria', 'Auditoría'],
@@ -191,8 +208,8 @@ export async function AdminPortal({
                 {
                   (
                     {
-                      inicio: 'Una comunidad bien administrada.',
-                      finanzas: 'Claridad en cada movimiento.',
+                      inicio: 'Dashboard de administración',
+                      finanzas: 'Finanzas de la comunidad',
                       registros: 'El registro de tu comunidad.',
                       auditoria: 'Cada decisión deja su historia.',
                     } as Record<string, string>
@@ -235,57 +252,75 @@ export async function AdminPortal({
             </section>
           )}
           {current === 'inicio' && (
-            <>
-              <div className="role-welcome">
-                <div>
-                  <span className="small-label">
-                    ADMINISTRACIÓN RESIDENCIAL
-                  </span>
-                  <h2>La perspectiva que necesitas.</h2>
-                  <p>
-                    Tu centro de gestión financiera y de registros. La recepción
-                    tiene su propio espacio.
-                  </p>
-                </div>
-              </div>
-              <div className="metric-grid">
-                <article className="metric">
-                  <span>Cobros vigentes</span>
-                  <strong>{financialReady ? money(billed) : '—'}</strong>
-                </article>
-                <article className="metric">
-                  <span>Pagos netos registrados</span>
-                  <strong>{financialReady ? money(collected) : '—'}</strong>
-                </article>
-                <article className="metric">
-                  <span>Gastos vigentes</span>
-                  <strong>{financialReady ? money(spent) : '—'}</strong>
-                </article>
-                <article className="metric">
-                  <span>Unidades registradas</span>
-                  <strong>{unitList.length}</strong>
-                </article>
-              </div>
-              <div className="editorial-grid admin-shortcuts">
-                {modules.slice(1, 4).map(([id, title]) => (
-                  <Link href={`${base}?seccion=${id}`} key={id}>
-                    <span className="small-label">GESTIÓN</span>
-                    <h2>{title}</h2>
-                    <span className="text-link">Abrir módulo</span>
-                  </Link>
-                ))}
-              </div>
+            <div className="dashboard-layout">
               <section className="panel">
-                <h2>Gestión financiera por etapas</h2>
-                <p className="panel-note">
-                  Esta versión permite cobros por unidad, gastos y registro
-                  manual de abonos y reversiones. Contabilidad completa,
-                  prorrateos, presupuestos, conciliación bancaria y pasarela de
-                  pagos siguen pendientes. No ejecuta transferencias ni cobros
-                  bancarios.
-                </p>
+                <div className="dashboard-heading">
+                  <div>
+                    <h2>Resumen financiero</h2>
+                    <p>
+                      Totales acumulados de la comunidad, en pesos chilenos.
+                    </p>
+                  </div>
+                  <Link className="text-link" href={base + '?seccion=finanzas'}>
+                    Ver finanzas
+                  </Link>
+                </div>
+                <div className="dashboard-metrics">
+                  {[
+                    ['Saldo pendiente', summary?.outstanding_clp ?? 0],
+                    ['Cobros emitidos', billed],
+                    ['Abonos netos', collected],
+                    ['Gastos vigentes', spent],
+                  ].map(([label, value]) => (
+                    <article className="dashboard-metric" key={String(label)}>
+                      <span>{label}</span>
+                      <strong>{financialReady ? money(value) : '—'}</strong>
+                    </article>
+                  ))}
+                </div>
               </section>
-            </>
+              <section className="panel">
+                <div className="dashboard-heading">
+                  <div>
+                    <h2>Pendientes de recepción</h2>
+                    <p>Solicitudes activas y encomiendas por retirar.</p>
+                  </div>
+                  <Link className="text-link" href={base + '?seccion=bitacora'}>
+                    Abrir bitácora
+                  </Link>
+                </div>
+                <div className="dashboard-metrics dashboard-metrics-compact">
+                  {[
+                    ['Solicitudes activas', 'solicitudes'],
+                    ['Encomiendas por retirar', 'encomiendas'],
+                  ].map(([label, section], i) => (
+                    <Link
+                      className="dashboard-metric"
+                      key={section}
+                      href={base + '?seccion=operaciones&operacion=' + section}
+                    >
+                      <span>{label}</span>
+                      <strong>{operationalCounts[i]?.count ?? '—'}</strong>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+              <section className="panel">
+                <h2>Accesos de administración</h2>
+                <nav
+                  aria-label="Accesos de administración"
+                  className="dashboard-links"
+                >
+                  {modules
+                    .filter(([id]) => id !== 'inicio')
+                    .map(([id, title]) => (
+                      <Link key={id} href={base + '?seccion=' + id}>
+                        {title}
+                      </Link>
+                    ))}
+                </nav>
+              </section>
+            </div>
           )}
           {current === 'registros' && ready && (
             <div className="portal-grid">

@@ -2262,3 +2262,74 @@ html[data-theme="dark"] .private-record {
   overflow-wrap: anywhere;
   font: inherit;
 }
+
+.dashboard-layout {
+  display: grid;
+  gap: 20px;
+}
+.dashboard-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px 20px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.dashboard-heading h2,
+.dashboard-section-title {
+  margin-bottom: 8px;
+  font-size: clamp(1.25rem, 3vw, 1.6rem);
+}
+.dashboard-heading p {
+  margin: 0;
+  color: var(--muted);
+}
+.dashboard-heading .text-link {
+  padding-top: 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.dashboard-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: 12px;
+}
+.dashboard-metrics-compact {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+.dashboard-metric {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: light-dark(#f5f7f5, #223034);
+}
+.dashboard-metric span {
+  color: var(--muted);
+}
+.dashboard-metric strong {
+  font-size: clamp(1.1rem, 2.4vw, 1.55rem);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.dashboard-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.dashboard-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.dashboard-links a:hover,
+a.dashboard-metric:hover {
+  border-color: var(--bronze);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
