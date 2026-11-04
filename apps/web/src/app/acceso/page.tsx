@@ -5,7 +5,7 @@ export default function Access() {
   return (
     <main className="access-page">
       <Link className="brand" href="/">
-        HOMESAFE REAL
+        HOME SAFE
       </Link>
       <section className="access-card">
         <span className="eyebrow">ESPACIO PRIVADO</span>
@@ -15,15 +15,15 @@ export default function Access() {
           <em>a tu comunidad.</em>
         </h1>
         <p>
-          Ingresa con tu cuenta de HomeSafe. Los espacios de residente,
+          Ingresa con tu cuenta de Home Safe. Los espacios de residente,
           conserjería y administración se habilitan según tus permisos.
         </p>
         <LoginForm />
         <Link className="text-link" href="/demo">
-          Explorar la demostración ↗
+          Explorar la demostración
         </Link>
         <Link className="text-link" href="/">
-          ← Volver al inicio
+          Volver al inicio
         </Link>
       </section>
     </main>

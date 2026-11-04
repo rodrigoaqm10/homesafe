@@ -119,7 +119,7 @@ export async function AdminPortal({
     return (
       <form action={administer}>
         {fields(operation, id)}
-        <SubmitButton>Anular registro ↗</SubmitButton>
+        <SubmitButton>Anular registro</SubmitButton>
       </form>
     );
   }
@@ -130,15 +130,14 @@ export async function AdminPortal({
     ['auditoria', 'Auditoría'],
     ['operaciones', 'Supervisión operativa'],
     ['camaras', 'Cámaras'],
+    ['bitacora', 'Bitácora diaria'],
   ];
   return (
     <div className="workspace admin-workspace">
       <aside className="sidebar">
         <Link className="brand" href="/">
           <span className="brand-symbol">H</span>
-          <span>
-            HOMESAFE<span className="brand-sub">REAL</span>
-          </span>
+          <span>HOME SAFE</span>
         </Link>
         <div className="community-box">
           <span className="community-icon">LO</span>
@@ -165,7 +164,7 @@ export async function AdminPortal({
             Decisiones, registros
             <br />y transparencia financiera.
           </p>
-          <Link href="/portal">← Mis comunidades</Link>
+          <Link href="/portal"> Mis comunidades</Link>
         </div>
       </aside>
       <div className="workspace-main">
@@ -176,7 +175,7 @@ export async function AdminPortal({
           </span>
           <form action={logout}>
             <button className="text-link" type="submit">
-              Cerrar sesión ↗
+              Cerrar sesión
             </button>
           </form>
         </header>
@@ -202,7 +201,7 @@ export async function AdminPortal({
               </p>
             </div>
             <Link href="/seguridad" className="text-link">
-              Seguridad de mi cuenta ↗
+              Seguridad de mi cuenta
             </Link>
           </div>
           {status === 'conflicto' && (
@@ -268,7 +267,7 @@ export async function AdminPortal({
                   <Link href={`${base}?seccion=${id}`} key={id}>
                     <span className="small-label">GESTIÓN</span>
                     <h2>{title}</h2>
-                    <span className="text-link">Abrir módulo ↗</span>
+                    <span className="text-link">Abrir módulo</span>
                   </Link>
                 ))}
               </div>
@@ -324,7 +323,7 @@ export async function AdminPortal({
                                       maxLength={60}
                                     />
                                   </label>
-                                  <SubmitButton>Guardar unidad ↗</SubmitButton>
+                                  <SubmitButton>Guardar unidad</SubmitButton>
                                 </form>
                               </details>
                             </td>
@@ -353,7 +352,7 @@ export async function AdminPortal({
                         Número o identificador
                         <input name="description" required maxLength={60} />
                       </label>
-                      <SubmitButton>Registrar unidad ↗</SubmitButton>
+                      <SubmitButton>Registrar unidad</SubmitButton>
                     </form>
                   </details>
                 </section>
@@ -418,7 +417,7 @@ export async function AdminPortal({
                             Este correo es de contacto. No modifica el correo de
                             inicio de sesión.
                           </p>
-                          <SubmitButton>Guardar cambios ↗</SubmitButton>
+                          <SubmitButton>Guardar cambios</SubmitButton>
                         </form>
                       </details>
                       {(links.data ?? [])
@@ -447,7 +446,7 @@ export async function AdminPortal({
                                   <option value="resident">Residente</option>
                                 </select>
                               </label>
-                              <SubmitButton>Guardar relación ↗</SubmitButton>
+                              <SubmitButton>Guardar relación</SubmitButton>
                             </form>
                           </details>
                         ))}
@@ -491,7 +490,7 @@ export async function AdminPortal({
                       <option value="resident">Residente</option>
                     </select>
                   </label>
-                  <SubmitButton>Guardar registro ↗</SubmitButton>
+                  <SubmitButton>Guardar registro</SubmitButton>
                 </form>
                 <p className="panel-note">
                   Registrar una persona no crea una cuenta ni le concede
@@ -574,7 +573,7 @@ export async function AdminPortal({
                                 />
                               </label>
                               <SubmitButton>
-                                Contabilizar abono manual ↗
+                                Contabilizar abono manual
                               </SubmitButton>
                             </form>
                           </details>
@@ -614,9 +613,7 @@ export async function AdminPortal({
                                     maxLength={120}
                                   />
                                 </label>
-                                <SubmitButton>
-                                  Registrar reversión ↗
-                                </SubmitButton>
+                                <SubmitButton>Registrar reversión</SubmitButton>
                               </form>
                             </details>
                           )}
@@ -661,7 +658,7 @@ export async function AdminPortal({
                         Vencimiento
                         <input type="date" name="date" required />
                       </label>
-                      <SubmitButton>Emitir cobro ↗</SubmitButton>
+                      <SubmitButton>Emitir cobro</SubmitButton>
                     </form>
                   </section>
                   <section className="panel">
@@ -684,7 +681,7 @@ export async function AdminPortal({
                         Fecha
                         <input type="date" name="date" required />
                       </label>
-                      <SubmitButton>Guardar gasto ↗</SubmitButton>
+                      <SubmitButton>Guardar gasto</SubmitButton>
                     </form>
                   </section>
                   <section className="panel">
@@ -743,9 +740,9 @@ export async function AdminPortal({
             </section>
           )}
           <footer className="workspace-footer">
-            <span>HomeSafe Real · Administración</span>
+            <span>Home Safe · Administración</span>
             <Link href={`${base}?seccion=operaciones`}>
-              Supervisar conserjería ↗
+              Supervisar conserjería
             </Link>
           </footer>
         </main>

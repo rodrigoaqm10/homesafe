@@ -14,7 +14,7 @@ function TotpQr({ source }: { source: string }) {
       className="mfa-qr"
       src={source}
       onError={() => setFailed(true)}
-      alt="Código QR privado para configurar tu autenticador HomeSafe"
+      alt="Código QR privado para configurar tu autenticador Home Safe"
       width={220}
       height={220}
     />
@@ -49,7 +49,7 @@ export function MfaForm({
               disabled={enrolling}
               type="submit"
             >
-              {enrolling ? 'Preparando…' : 'Configurar mi autenticador ↗'}
+              {enrolling ? 'Preparando…' : 'Configurar mi autenticador'}
             </button>
           </form>
         </>
@@ -71,7 +71,7 @@ export function MfaForm({
             <summary>No puedo escanear: usar clave manual</summary>
             <p>
               En tu autenticador selecciona ingresar una clave de configuración,
-              usa el nombre HomeSafe y el tipo basado en tiempo.
+              usa el nombre Home Safe y el tipo basado en tiempo.
             </p>
             <code className="mfa-secret">{setup.secret}</code>
           </details>
@@ -87,7 +87,7 @@ export function MfaForm({
             >
               {enrolling
                 ? 'Reemplazando configuración…'
-                : 'Generar un nuevo QR y reemplazar la configuración pendiente ↗'}
+                : 'Generar un nuevo QR y reemplazar la configuración pendiente'}
             </button>
           </form>
         </>
@@ -117,7 +117,7 @@ export function MfaForm({
             className="button primary"
             disabled={verifying || enrolling}
           >
-            {verifying ? 'Verificando…' : 'Verificar y continuar ↗'}
+            {verifying ? 'Verificando…' : 'Verificar y continuar'}
           </button>
         </form>
       )}

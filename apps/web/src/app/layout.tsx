@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { connection } from 'next/server';
+import { cookies } from 'next/headers';
+import { ThemeToggle } from '@/components/theme-toggle';
 export const metadata: Metadata = {
   title: {
-    default: 'HomeSafe Real — El cuidado de tu edificio, elevado.',
-    template: '%s · HomeSafe Real',
+    default: 'Home Safe — El cuidado de tu edificio, elevado.',
+    template: '%s · Home Safe',
   },
   description:
     'Administración residencial, operaciones y comunidad en una plataforma diseñada con atención al detalle.',
@@ -15,14 +16,18 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await connection();
+  const theme =
+    (await cookies()).get('home-safe-theme')?.value === 'dark'
+      ? 'dark'
+      : 'light';
   return (
-    <html lang="es">
+    <html lang="es" data-theme={theme}>
       <body>
         <a className="skip-link" href="#contenido">
           Saltar al contenido
         </a>
         <div id="contenido">{children}</div>
+        <ThemeToggle initial={theme} />
       </body>
     </html>
   );

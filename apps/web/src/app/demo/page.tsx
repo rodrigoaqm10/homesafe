@@ -31,10 +31,10 @@ export default function Demo() {
     <main className="profile-picker">
       <header className="picker-header">
         <Link className="brand" href="/">
-          HOMESAFE REAL
+          HOME SAFE
         </Link>
         <Link className="text-link" href="/">
-          Volver al inicio ↗
+          Volver al inicio
         </Link>
       </header>
       <section className="picker-intro">
@@ -45,7 +45,7 @@ export default function Demo() {
           para <em>cada persona.</em>
         </h1>
         <p>
-          Recorre HomeSafe desde cada perfil. Crea una visita como residente y
+          Recorre Home Safe desde cada perfil. Crea una visita como residente y
           cambia a conserjería para registrar su ingreso.
         </p>
       </section>
@@ -64,7 +64,7 @@ export default function Demo() {
             <p>{role.text}</p>
             <small>{role.modules}</small>
             <span className="profile-enter">
-              Explorar como {role.name.toLowerCase()} <b>↗</b>
+              Explorar como {role.name.toLowerCase()}
             </span>
           </Link>
         ))}

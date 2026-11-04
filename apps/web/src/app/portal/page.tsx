@@ -17,11 +17,11 @@ export default async function Portal() {
     <main className="profile-picker">
       <header className="picker-header">
         <Link className="brand" href="/">
-          HOMESAFE REAL
+          HOME SAFE
         </Link>
         <form action={logout}>
           <button className="text-link" type="submit">
-            Cerrar sesión ↗
+            Cerrar sesión
           </button>
         </form>
       </header>
@@ -42,7 +42,7 @@ export default async function Portal() {
           <h2>Estamos preparando tu comunidad.</h2>
           <p className="panel-note">
             La conexión de usuarios está disponible. Falta completar la
-            configuración de datos y permisos de HomeSafe.
+            configuración de datos y permisos de Home Safe.
           </p>
         </section>
       ) : members.length === 0 ? (
@@ -60,7 +60,7 @@ export default async function Portal() {
               <span className="small-label">MEMBRESÍA ACTIVA</span>
               <h2>{roleNames[m.role] ?? 'Comunidad'}</h2>
               <p>Acceso asignado a tu comunidad.</p>
-              <span className="profile-enter">Abrir mi espacio ↗</span>
+              <span className="profile-enter">Abrir mi espacio</span>
             </Link>
           ))}
         </div>

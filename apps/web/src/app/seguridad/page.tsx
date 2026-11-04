@@ -10,7 +10,7 @@ export default async function Security() {
   return (
     <main className="access-page">
       <Link className="brand" href="/portal">
-        HOMESAFE REAL
+        HOME SAFE
       </Link>
       <section className="access-card">
         <span className="eyebrow">UNA CAPA ADICIONAL DE PROTECCIÓN</span>
@@ -23,7 +23,7 @@ export default async function Security() {
           <>
             <p>La verificación en dos pasos está activa para esta sesión.</p>
             <Link className="button primary" href="/portal">
-              Continuar a mi comunidad ↗
+              Continuar a mi comunidad
             </Link>
           </>
         ) : error ? (
@@ -44,7 +44,7 @@ export default async function Security() {
           </>
         )}
         <Link href="/portal" className="text-link">
-          ← Volver a mis accesos
+          Volver a mis accesos
         </Link>
       </section>
     </main>

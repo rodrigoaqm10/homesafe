@@ -81,9 +81,7 @@ export function DemoWorkspace() {
       <aside className="sidebar">
         <Link href="/" className="brand">
           <span className="brand-symbol">H</span>
-          <span>
-            HOMESAFE<span className="brand-sub">REAL</span>
-          </span>
+          <span>HOME SAFE</span>
         </Link>
         <div className="community-box">
           <span className="community-icon">LO</span>
@@ -93,14 +91,13 @@ export function DemoWorkspace() {
         </div>
         <span className="sidebar-label">ESPACIO DE TRABAJO</span>
         <nav aria-label="Panel de demostración">
-          {tabs.map((t, i) => (
+          {tabs.map((t) => (
             <button
               type="button"
               key={t}
               onClick={() => changeTab(t)}
               aria-current={tab === t ? 'page' : undefined}
             >
-              <span>{['◫', '☷', '⌂', '↗', '▤'][i]}</span>
               {t}
               {t === 'Incidencias' && (
                 <small>
@@ -117,7 +114,7 @@ export function DemoWorkspace() {
             <br />
             Todos los datos son ficticios.
           </p>
-          <Link href="/">← Volver a HomeSafe</Link>
+          <Link href="/"> Volver a Home Safe</Link>
         </div>
       </aside>
       <div className="workspace-main">
@@ -159,7 +156,7 @@ export function DemoWorkspace() {
                 setNotificationOpen(false);
               }}
             >
-              Revisar incidencias →
+              Revisar incidencias
             </button>
           </div>
         )}
@@ -183,8 +180,8 @@ export function DemoWorkspace() {
             </button>
           </div>
           <div className="demo-banner">
-            <span>◈</span> Entorno de muestra. No procesa pagos ni almacena
-            datos personales. Los cambios son temporales.
+            Entorno de muestra. No procesa pagos ni almacena datos personales.
+            Los cambios son temporales.
           </div>
           {notice && (
             <p className="success-notice" role="status">
@@ -295,7 +292,7 @@ export function DemoWorkspace() {
                     className="text-link"
                     onClick={() => changeTab('Incidencias')}
                   >
-                    Ver actividad operacional ↗
+                    Ver actividad operacional
                   </button>
                 </section>
               </div>
@@ -380,7 +377,7 @@ export function DemoWorkspace() {
                                 );
                               }}
                             >
-                              Resolver ↗
+                              Resolver
                             </button>
                           )}
                         </td>
@@ -497,7 +494,7 @@ export function DemoWorkspace() {
             </section>
           )}
           <footer className="workspace-footer">
-            <span>HomeSafe Real</span>
+            <span>Home Safe</span>
             <span>Gestión con criterio. Cuidado en cada detalle.</span>
           </footer>
         </main>
@@ -555,7 +552,7 @@ export function DemoWorkspace() {
             </select>
           </label>
           <button className="button primary" type="submit">
-            Crear incidencia ↗
+            Crear incidencia
           </button>
         </form>
       </dialog>

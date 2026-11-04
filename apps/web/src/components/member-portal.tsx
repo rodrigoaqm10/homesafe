@@ -5,7 +5,6 @@ import { money } from '@/modules/finance/domain/money';
 import { portalSection } from '@/modules/identity/domain/portal-navigation';
 import type { Membership } from '@/modules/identity/infrastructure/session';
 import {
-  ActivityLog,
   Announcements,
   dateLabel,
   IncidentSection,
@@ -136,23 +135,13 @@ export async function MemberPortal({
                   maxLength={10000}
                 />
               </label>
-              <SubmitButton>Publicar comunicado ↗</SubmitButton>
+              <SubmitButton>Publicar comunicado</SubmitButton>
             </form>
           </section>
         )}
       </>
     );
-  else if (current === 'bitacora' && !resident) {
-    const logs = await scope('audit_logs')
-      .in('entity_type', ['visits', 'packages', 'incidents', 'announcements'])
-      .order('created_at', { ascending: false })
-      .limit(100);
-    content = logs.error ? (
-      <p role="alert">No se pudo consultar la actividad.</p>
-    ) : (
-      <ActivityLog entries={logs.data ?? []} />
-    );
-  } else if (resident) {
+  else if (resident) {
     const [summary, charges, history] = await Promise.all([
       client.rpc('resident_finance_summary', {
         org: member.organization_id,
@@ -208,7 +197,7 @@ export async function MemberPortal({
                   className="button button-primary"
                   href={portalHref(member, 'cuenta')}
                 >
-                  Revisar mi cuenta ↗
+                  Revisar mi cuenta
                 </Link>
               )}
             </section>
@@ -295,7 +284,7 @@ export async function MemberPortal({
                     key={id}
                     href={portalHref(member, id)}
                   >
-                    <h3>{title} ↗</h3>
+                    <h3>{title}</h3>
                     <p>{description}</p>
                   </Link>
                 ))}
@@ -351,7 +340,7 @@ export async function MemberPortal({
             >
               <span>{label}</span>
               <strong>{counts[i].error ? '—' : (counts[i].count ?? 0)}</strong>
-              <span>Gestionar ↗</span>
+              <span>Gestionar</span>
             </Link>
           ))}
         </div>

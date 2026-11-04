@@ -30,14 +30,6 @@ export type Announcement = {
   body: string;
   created_at: string;
 };
-export type Audit = {
-  id: string;
-  entity_type: string;
-  action: string;
-  created_at: string;
-  old_status: string | null;
-  new_status: string | null;
-};
 const names: Record<string, string> = {
   authorized: 'Autorizada',
   arrived: 'Dentro del edificio',
@@ -114,7 +106,7 @@ function Mutation({
       <Fields member={member} kind={kind} section={section} />
       <input type="hidden" name="record_id" value={id} />
       {next && <input type="hidden" name="next_status" value={next} />}
-      <SubmitButton>{label} ↗</SubmitButton>
+      <SubmitButton>{label}</SubmitButton>
     </form>
   );
 }
@@ -236,7 +228,7 @@ export function VisitSection({
             horario. Esta autorización todavía no genera QR ni abre accesos
             físicos.
           </p>
-          <SubmitButton>Autorizar visita ↗</SubmitButton>
+          <SubmitButton>Autorizar visita</SubmitButton>
         </form>
       </section>
     </div>
@@ -301,7 +293,7 @@ export function PackageSection({
               Empresa o transportista
               <input name="text" required minLength={2} maxLength={100} />
             </label>
-            <SubmitButton>Registrar encomienda ↗</SubmitButton>
+            <SubmitButton>Registrar encomienda</SubmitButton>
           </form>
         </section>
       ) : (
@@ -382,7 +374,7 @@ export function IncidentSection({
             Descripción breve
             <input name="text" minLength={5} maxLength={160} required />
           </label>
-          <SubmitButton>Enviar solicitud ↗</SubmitButton>
+          <SubmitButton>Enviar solicitud</SubmitButton>
         </form>
       </section>
     </div>
@@ -409,44 +401,6 @@ export function Announcements({
           La administración todavía no publicó comunicados.
         </p>
       )}
-    </section>
-  );
-}
-export function ActivityLog({ entries }: { entries: Audit[] }) {
-  return (
-    <section className="panel">
-      <span className="small-label">ACTIVIDAD OPERACIONAL</span>
-      <h2>La continuidad de cada turno.</h2>
-      <ol className="log-timeline">
-        {entries.map((e) => (
-          <li key={e.id}>
-            <span className="small-label">{dateLabel(e.created_at)}</span>
-            <p>
-              {(
-                {
-                  visits: 'Visita',
-                  packages: 'Encomienda',
-                  incidents: 'Solicitud',
-                  announcements: 'Comunicado',
-                } as Record<string, string>
-              )[e.entity_type] ?? 'Registro'}{' '}
-              ·{' '}
-              {e.action === 'INSERT'
-                ? 'Registro creado'
-                : (names[e.old_status ?? ''] ?? 'Actualizado') +
-                  ' → ' +
-                  (names[e.new_status ?? ''] ?? 'actualizado')}
-            </p>
-          </li>
-        ))}
-      </ol>
-      {!entries.length && (
-        <p className="empty-state">Sin actividad registrada.</p>
-      )}
-      <p className="panel-note">
-        Últimos 100 eventos operacionales. Las notas manuales y el cierre formal
-        de turno aún no están implementados.
-      </p>
     </section>
   );
 }

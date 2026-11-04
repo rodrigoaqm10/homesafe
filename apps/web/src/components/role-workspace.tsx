@@ -148,9 +148,7 @@ export function RoleWorkspace({ role }: { role: Role }) {
       <aside className="sidebar">
         <Link className="brand" href="/">
           <span className="brand-symbol">H</span>
-          <span>
-            HOMESAFE<span className="brand-sub">REAL</span>
-          </span>
+          <span>HOME SAFE</span>
         </Link>
         <div className="community-box">
           <span className="community-icon">LO</span>
@@ -176,7 +174,7 @@ export function RoleWorkspace({ role }: { role: Role }) {
         </nav>
         {admin && (
           <Link className="finance-link" href="/demo/administrador/gestion">
-            Finanzas y directorio ↗
+            Finanzas y directorio
           </Link>
         )}
         <div className="sidebar-bottom">
@@ -187,7 +185,7 @@ export function RoleWorkspace({ role }: { role: Role }) {
             <br />
             Una experiencia para tu función.
           </p>
-          <Link href="/demo">← Elegir otra experiencia</Link>
+          <Link href="/demo"> Elegir otra experiencia</Link>
         </div>
       </aside>
       <div className="workspace-main">
@@ -197,7 +195,7 @@ export function RoleWorkspace({ role }: { role: Role }) {
             <strong>{roleNames[role]}</strong>
           </span>
           <Link href="/demo" className="text-link">
-            Cambiar perfil de muestra ↗
+            Cambiar perfil de muestra
           </Link>
         </header>
         <main className="workspace-content">
@@ -252,9 +250,8 @@ export function RoleWorkspace({ role }: { role: Role }) {
             </button>
           </div>
           <div className="demo-banner">
-            ◈ Datos ficticios compartidos entre los tres perfiles. No
-            introduzcas información personal. Cambiar el perfil no equivale a
-            autenticarse.
+            Datos ficticios compartidos entre los tres perfiles. No introduzcas
+            información personal. Cambiar el perfil no equivale a autenticarse.
           </div>
           {message && (
             <p className="success-notice" role="status">
@@ -302,7 +299,7 @@ export function RoleWorkspace({ role }: { role: Role }) {
                     type="button"
                     onClick={() => navigate('Visitas')}
                   >
-                    Revisar visitas ↗
+                    Revisar visitas
                   </button>
                 </article>
                 <article className="metric">
@@ -318,7 +315,7 @@ export function RoleWorkspace({ role }: { role: Role }) {
                     type="button"
                     onClick={() => navigate('Encomiendas')}
                   >
-                    Ver recepción ↗
+                    Ver recepción
                   </button>
                 </article>
                 <article className="metric">
@@ -334,7 +331,7 @@ export function RoleWorkspace({ role }: { role: Role }) {
                     type="button"
                     onClick={() => navigate('Solicitudes')}
                   >
-                    Ver seguimiento ↗
+                    Ver seguimiento
                   </button>
                 </article>
                 <article className="metric">
@@ -382,7 +379,6 @@ export function RoleWorkspace({ role }: { role: Role }) {
                       {resident
                         ? 'Reportar un detalle'
                         : 'Autorizar visita de muestra'}{' '}
-                      ↗
                     </button>
                     <button
                       type="button"
@@ -390,7 +386,7 @@ export function RoleWorkspace({ role }: { role: Role }) {
                         navigate(resident ? 'Comunicados' : 'Bitácora')
                       }
                     >
-                      {resident ? 'Leer comunicados' : 'Consultar bitácora'} ↗
+                      {resident ? 'Leer comunicados' : 'Consultar bitácora'}
                     </button>
                   </div>
                 </section>
@@ -487,7 +483,7 @@ export function RoleWorkspace({ role }: { role: Role }) {
                                       transition(v.id, 'Ingresada')
                                     }
                                   >
-                                    Registrar ingreso ↗
+                                    Registrar ingreso
                                   </button>
                                 ) : v.status === 'Ingresada' ? (
                                   <button
@@ -497,7 +493,7 @@ export function RoleWorkspace({ role }: { role: Role }) {
                                       transition(v.id, 'Finalizada')
                                     }
                                   >
-                                    Registrar salida ↗
+                                    Registrar salida
                                   </button>
                                 ) : (
                                   <span>—</span>
@@ -582,7 +578,7 @@ export function RoleWorkspace({ role }: { role: Role }) {
                                       );
                                     }}
                                   >
-                                    Registrar entrega ↗
+                                    Registrar entrega
                                   </button>
                                 ) : resident && p.status === 'Recibida' ? (
                                   'Pendiente de retiro'
@@ -652,7 +648,6 @@ export function RoleWorkspace({ role }: { role: Role }) {
                               {r.status === 'Pendiente'
                                 ? 'Tomar solicitud'
                                 : 'Resolver solicitud'}{' '}
-                              ↗
                             </button>
                           )}
                         </article>
@@ -719,14 +714,14 @@ export function RoleWorkspace({ role }: { role: Role }) {
                     type="button"
                     onClick={() => openForm('request')}
                   >
-                    Crear solicitud relacionada ↗
+                    Crear solicitud relacionada
                   </button>
                 </article>
               )}
             </section>
           )}
           <footer className="workspace-footer">
-            <Link href="/demo">← Los tres perfiles</Link>
+            <Link href="/demo"> Los tres perfiles</Link>
             <button
               type="button"
               className="reset-demo"
@@ -805,7 +800,6 @@ export function RoleWorkspace({ role }: { role: Role }) {
             {modal === 'visit'
               ? 'Autorizar visita de muestra'
               : 'Guardar registro de muestra'}{' '}
-            ↗
           </button>
         </form>
       </dialog>

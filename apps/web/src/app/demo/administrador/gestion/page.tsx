@@ -5,7 +5,7 @@ export default function Page() {
     <>
       <div className="legacy-banner">
         <Link href="/demo/administrador">
-          ← Volver al espacio del administrador
+          Volver al espacio del administrador
         </Link>
         <span>
           Vista financiera conceptual · Datos de muestra independientes

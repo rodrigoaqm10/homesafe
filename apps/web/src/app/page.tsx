@@ -74,10 +74,7 @@ export default function Home() {
       <header className="site-header">
         <Link className="brand" href="/">
           <span className="brand-symbol">H</span>
-          <span>
-            HOMESAFE
-            <span className="brand-sub">REAL · RESIDENTIAL INTELLIGENCE</span>
-          </span>
+          <span>HOME SAFE</span>
         </Link>
         <nav aria-label="Navegación principal">
           <a href="#experiencia">La experiencia</a>
@@ -85,7 +82,7 @@ export default function Home() {
           <a href="#confianza">Confianza</a>
         </nav>
         <Link className="header-access" href="/acceso">
-          Acceso privado ↗
+          Acceso privado
         </Link>
       </header>
       <section className="hero">
@@ -106,10 +103,10 @@ export default function Home() {
           </p>
           <div className="hero-actions">
             <Link className="button primary" href="/demo">
-              Explorar la plataforma <span>↗</span>
+              Explorar la plataforma
             </Link>
             <a className="text-link" href="#experiencia">
-              Descubrir HomeSafe ↓
+              Descubrir Home Safe ↓
             </a>
           </div>
           <div className="hero-footnote">
@@ -151,7 +148,7 @@ export default function Home() {
       </section>
       <section id="experiencia" className="experience section-space">
         <div className="section-heading">
-          <span className="eyebrow">LA EXPERIENCIA HOMESAFE</span>
+          <span className="eyebrow">LA EXPERIENCIA HOME SAFE</span>
           <h2>
             Un edificio excepcional.
             <br />
@@ -194,7 +191,7 @@ export default function Home() {
       </section>
       <section id="plataforma" className="platform-section section-space">
         <div>
-          <span className="eyebrow">HOMESAFE COMMAND</span>
+          <span className="eyebrow">HOME SAFE COMMAND</span>
           <h2>
             La perspectiva completa.
             <br />
@@ -205,7 +202,7 @@ export default function Home() {
             a tu comunidad.
           </p>
           <Link href="/demo" className="button light">
-            Recorrer la demostración ↗
+            Recorrer la demostración
           </Link>
           <small>Entorno de muestra · Sin datos personales reales</small>
         </div>
@@ -232,7 +229,6 @@ export default function Home() {
             </div>
           </div>
           <div className="mini-task">
-            <span>↗</span>
             <div>
               Mantención de ascensor<small>Programada · Torre A</small>
             </div>
@@ -271,7 +267,7 @@ export default function Home() {
       </section>
       <footer className="site-footer">
         <Link className="brand" href="/">
-          HOMESAFE REAL
+          HOME SAFE
         </Link>
         <p>El cuidado de tu edificio, elevado.</p>
         <span>Plataforma en desarrollo · 2026</span>

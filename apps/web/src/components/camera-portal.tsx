@@ -121,7 +121,7 @@ export async function CameraPortal({
                         Registra solo la novedad. Evita datos personales,
                         credenciales o enlaces al video.
                       </p>
-                      <SubmitButton>Guardar observación ↗</SubmitButton>
+                      <SubmitButton>Guardar observación</SubmitButton>
                     </form>
                   </details>
                 </article>
@@ -161,7 +161,7 @@ export async function CameraPortal({
                       placeholder="Vestíbulo"
                     />
                   </label>
-                  <SubmitButton>Agregar al inventario ↗</SubmitButton>
+                  <SubmitButton>Agregar al inventario</SubmitButton>
                 </form>
               </section>
             )}

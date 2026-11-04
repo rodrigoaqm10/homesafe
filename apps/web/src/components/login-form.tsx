@@ -31,7 +31,7 @@ export function LoginForm() {
         />
       </label>
       <button className="button primary" disabled={pending} type="submit">
-        {pending ? 'Verificando acceso…' : 'Ingresar a mi comunidad ↗'}
+        {pending ? 'Verificando acceso…' : 'Ingresar a mi comunidad'}
       </button>
       <p>
         Acceso por invitación. Tu perfil lo determina la membresía de tu

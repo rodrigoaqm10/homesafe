@@ -7,7 +7,8 @@ import {
 import type { Membership } from '@/modules/identity/infrastructure/session';
 export function portalHref(member: Membership, section: string) {
   const base = '/portal/' + member.id;
-  if (section === 'camaras') return base + '?seccion=camaras';
+  if (section === 'camaras' || section === 'bitacora')
+    return base + '?seccion=' + section;
   return member.role === 'administrador'
     ? base + '?seccion=operaciones&operacion=' + section
     : base + '?seccion=' + section;
@@ -48,9 +49,7 @@ export function PortalShell({
       <aside className="sidebar">
         <Link className="brand" href="/">
           <span className="brand-symbol">H</span>
-          <span>
-            HOMESAFE<span className="brand-sub">REAL</span>
-          </span>
+          <span>HOME SAFE</span>
         </Link>
         <div className="community-box">
           <span className="community-icon">LO</span>
@@ -79,7 +78,7 @@ export function PortalShell({
           <p>
             {resident ? 'Tu hogar, conectado.' : 'Cada turno, bien acompañado.'}
           </p>
-          <Link href="/portal">← Mis accesos</Link>
+          <Link href="/portal"> Mis accesos</Link>
         </div>
       </aside>
       <div className="workspace-main">
@@ -92,7 +91,7 @@ export function PortalShell({
           <div className="private-topnav">
             {member.role === 'administrador' && (
               <Link className="text-link" href={'/portal/' + member.id}>
-                ← Administración
+                Administración
               </Link>
             )}
             <Link className="text-link" href="/portal">
@@ -100,7 +99,7 @@ export function PortalShell({
             </Link>
             <form action={logout}>
               <button className="text-link" type="submit">
-                Cerrar sesión ↗
+                Cerrar sesión
               </button>
             </form>
           </div>
@@ -130,8 +129,8 @@ export function PortalShell({
           )}
           {children}
           <footer className="workspace-footer">
-            <span>HomeSafe Real · {profile}</span>
-            <Link href="/seguridad">Seguridad de mi cuenta ↗</Link>
+            <span>Home Safe · {profile}</span>
+            <Link href="/seguridad">Seguridad de mi cuenta</Link>
           </footer>
         </main>
       </div>
