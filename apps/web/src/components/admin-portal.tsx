@@ -129,6 +129,7 @@ export async function AdminPortal({
     ['registros', 'Unidades y residentes'],
     ['auditoria', 'Auditoría'],
     ['operaciones', 'Supervisión operativa'],
+    ['camaras', 'Cámaras'],
   ];
   return (
     <div className="workspace admin-workspace">

@@ -7,6 +7,7 @@ import {
 import type { Membership } from '@/modules/identity/infrastructure/session';
 export function portalHref(member: Membership, section: string) {
   const base = '/portal/' + member.id;
+  if (section === 'camaras') return base + '?seccion=camaras';
   return member.role === 'administrador'
     ? base + '?seccion=operaciones&operacion=' + section
     : base + '?seccion=' + section;

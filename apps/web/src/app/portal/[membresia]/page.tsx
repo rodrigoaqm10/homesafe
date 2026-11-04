@@ -1,4 +1,5 @@
 import { AdminPortal } from '@/components/admin-portal';
+import { CameraPortal } from '@/components/camera-portal';
 import { MemberPortal } from '@/components/member-portal';
 import { requireMembership } from '@/modules/identity/infrastructure/session';
 export const metadata = { title: 'Mi comunidad' };
@@ -16,6 +17,8 @@ export default async function Page({
   const { membresia } = await params;
   const { member } = await requireMembership(membresia);
   const { estado, seccion, operacion } = await searchParams;
+  if (seccion === 'camaras' && member.role !== 'residente')
+    return <CameraPortal member={member} status={estado} />;
   if (member.role === 'administrador' && seccion !== 'operaciones')
     return (
       <AdminPortal

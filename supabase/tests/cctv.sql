@@ -1,0 +1,32 @@
+begin;
+insert into auth.users(id) values('00000000-0000-0000-0000-000000000051'),('00000000-0000-0000-0000-000000000052'),('00000000-0000-0000-0000-000000000053');
+insert into public.organizations(id,name) values('10000000-0000-0000-0000-000000000051','CCTV QA'),('10000000-0000-0000-0000-000000000052','CCTV QA externo');
+insert into public.communities(id,organization_id,name) values('20000000-0000-0000-0000-000000000051','10000000-0000-0000-0000-000000000051','CCTV QA'),('20000000-0000-0000-0000-000000000052','10000000-0000-0000-0000-000000000052','CCTV QA externo');
+insert into public.units(id,organization_id,community_id,label) values('30000000-0000-0000-0000-000000000051','10000000-0000-0000-0000-000000000051','20000000-0000-0000-0000-000000000051','101');
+insert into public.community_memberships(organization_id,community_id,profile_id,role,unit_id) values
+ ('10000000-0000-0000-0000-000000000051','20000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000051','administrador',null),('10000000-0000-0000-0000-000000000051','20000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000052','conserje',null),('10000000-0000-0000-0000-000000000051','20000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000053','residente','30000000-0000-0000-0000-000000000051');
+insert into public.security_cameras(id,organization_id,community_id,label,location) values('40000000-0000-0000-0000-000000000052','10000000-0000-0000-0000-000000000052','20000000-0000-0000-0000-000000000052','Cámara externa','Acceso');
+set local role authenticated;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-000000000051","aal":"aal2"}',true);
+insert into public.security_cameras(organization_id,community_id,label,location) values('10000000-0000-0000-0000-000000000051','20000000-0000-0000-0000-000000000051','Entrada principal','Vestíbulo');
+select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-000000000052","aal":"aal1"}',true);
+do $$declare local_camera uuid;begin
+ assert (select count(*) from public.security_camera_status)=1,'External inventory exposed';
+ select id into local_camera from public.security_cameras;
+ insert into public.security_camera_events(organization_id,community_id,camera_id,state,note) values('10000000-0000-0000-0000-000000000051','20000000-0000-0000-0000-000000000051',local_camera,'sin_imagen','Prueba manual');
+ assert (select state from public.security_camera_status)='sin_imagen','State not visible';
+ assert (select actor_id from public.security_camera_history)='00000000-0000-0000-0000-000000000052'::uuid,'Wrong author';
+ begin insert into public.security_cameras(organization_id,community_id,label,location) values('10000000-0000-0000-0000-000000000051','20000000-0000-0000-0000-000000000051','Cámara indebida','Vestíbulo');raise exception 'Concierge registered camera';exception when insufficient_privilege then null;end;
+ begin insert into public.security_camera_events(organization_id,community_id,camera_id,state) values('10000000-0000-0000-0000-000000000051','20000000-0000-0000-0000-000000000051','40000000-0000-0000-0000-000000000052','operativa');raise exception 'Cross-community camera accepted';exception when foreign_key_violation then null;end;
+ begin update public.security_camera_events set note='Cambio';raise exception 'History editable';exception when insufficient_privilege then null;end;
+ begin insert into public.security_camera_events(organization_id,community_id,camera_id,state,actor_id) values('10000000-0000-0000-0000-000000000051','20000000-0000-0000-0000-000000000051',local_camera,'operativa','00000000-0000-0000-0000-000000000051');raise exception 'Forged author accepted';exception when insufficient_privilege then null;end;
+end;$$;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-000000000051","aal":"aal2"}',true);
+do $$begin assert (select count(*) from public.audit_logs where entity_type in ('security_cameras','security_camera_events'))=2,'Audit missing';end;$$;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-000000000051","aal":"aal1"}',true);
+do $$begin assert (select count(*) from public.security_camera_status)=0,'Admin without MFA can view';end;$$;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-000000000053","aal":"aal1"}',true);
+do $$begin assert (select count(*) from public.security_camera_status)=0,'Resident can view inventory';assert (select count(*) from public.security_camera_history)=0,'Resident can view history';end;$$;
+set local role anon;
+do $$begin begin perform 1 from public.security_camera_status;raise exception 'Anonymous access allowed';exception when insufficient_privilege then null;end;end;$$;
+rollback;

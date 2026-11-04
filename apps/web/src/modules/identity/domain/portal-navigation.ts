@@ -8,6 +8,7 @@ export const residentNavigation = [
 ] as const;
 export const conciergeNavigation = [
   ['recepcion', 'Recepción'],
+  ['camaras', 'Cámaras'],
   ['visitas', 'Visitas y accesos'],
   ['encomiendas', 'Encomiendas'],
   ['solicitudes', 'Solicitudes'],
