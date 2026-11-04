@@ -23,7 +23,7 @@ export default function MembershipInquiry() {
         </p>
       </section>
       <div className="portal-grid">
-        <div>
+        <div className="membership-plans">
           {(['Normal', 'Pro'] as const).map((tier) => (
             <article className="panel" key={tier}>
               <h2>{tier}</h2>

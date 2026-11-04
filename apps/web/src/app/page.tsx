@@ -108,9 +108,9 @@ export default function Home() {
             <Link className="button primary" href="/demo">
               Explorar la plataforma
             </Link>
-            <a className="text-link" href="#experiencia">
-              Descubrir Home Safe ↓
-            </a>
+            <Link className="text-link" href="/membresia">
+              Ver planes
+            </Link>
           </div>
           <div className="hero-footnote">
             <span>01 — ADMINISTRAR CON CRITERIO</span>

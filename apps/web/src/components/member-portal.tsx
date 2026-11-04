@@ -43,6 +43,9 @@ export async function MemberPortal({
         )
       : q;
   };
+  const needsUnits =
+    resident || ['visitas', 'encomiendas', 'solicitudes'].includes(current);
+  const empty = { data: [], error: null };
   const [community, units, visits, packages, incidents, announcements] =
     await Promise.all([
       client
@@ -51,22 +54,34 @@ export async function MemberPortal({
         .eq('id', member.community_id)
         .eq('organization_id', member.organization_id)
         .single(),
-      resident
-        ? scope('units').eq(
-            'id',
-            member.unit_id ?? '00000000-0000-0000-0000-000000000000',
-          )
-        : scope('units').order('label'),
-      personal('visits').order('created_at', { ascending: false }).limit(100),
-      personal('packages')
-        .order('received_at', { ascending: false })
-        .limit(100),
-      personal('incidents')
-        .order('created_at', { ascending: false })
-        .limit(100),
-      scope('announcements')
-        .order('created_at', { ascending: false })
-        .limit(50),
+      !needsUnits
+        ? empty
+        : resident
+          ? scope('units').eq(
+              'id',
+              member.unit_id ?? '00000000-0000-0000-0000-000000000000',
+            )
+          : scope('units').order('label'),
+      current === 'visitas'
+        ? personal('visits')
+            .order('created_at', { ascending: false })
+            .limit(100)
+        : empty,
+      current === 'encomiendas'
+        ? personal('packages')
+            .order('received_at', { ascending: false })
+            .limit(100)
+        : empty,
+      current === 'solicitudes'
+        ? personal('incidents')
+            .order('created_at', { ascending: false })
+            .limit(100)
+        : empty,
+      ['comunicados', 'inicio', 'recepcion'].includes(current)
+        ? scope('announcements')
+            .order('created_at', { ascending: false })
+            .limit(current === 'comunicados' ? 50 : 3)
+        : empty,
     ]);
   const unit = units.data?.[0]?.label ?? 'Sin unidad asignada';
   const unavailable = [
@@ -83,10 +98,8 @@ export async function MemberPortal({
     recepcion: 'Recepción',
     visitas: resident ? 'Tus visitas.' : 'Visitas y accesos.',
     encomiendas: resident ? 'Tus encomiendas.' : 'Recepción de encomiendas.',
-    solicitudes: resident
-      ? 'Estamos para ayudarte.'
-      : 'Solicitudes por atender.',
-    comunicados: 'Vida en comunidad.',
+    solicitudes: resident ? 'Mis solicitudes' : 'Solicitudes por atender',
+    comunicados: 'Comunicados',
     bitacora: 'Continuidad del servicio.',
   };
   let content: React.ReactNode;

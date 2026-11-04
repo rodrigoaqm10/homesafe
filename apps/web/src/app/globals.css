@@ -2333,3 +2333,153 @@ a.dashboard-metric:hover {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
+
+/* Keep dense records and actions within their own layout columns. */
+.page-top > *,
+.workspace-header > *,
+.portal-grid > *,
+.dashboard-grid > *,
+.role-shortcuts > *,
+.editorial-grid > *,
+.trust-grid > * {
+  min-width: 0;
+}
+.workspace-content :is(h1, h2, h3, p, summary),
+.access-card :is(h1, h2, p),
+.profile-card,
+.community-box {
+  overflow-wrap: anywhere;
+}
+.portal-grid {
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+}
+.role-shortcuts {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+.table-scroll {
+  max-width: 100%;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+.table-scroll td {
+  max-width: 26rem;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.secure-form textarea {
+  resize: vertical;
+  min-height: 5rem;
+}
+.secure-form input,
+.secure-form select,
+.secure-form textarea {
+  min-width: 0;
+  max-width: 100%;
+}
+:where(textarea, summary, .table-scroll):focus-visible {
+  outline: 2px solid var(--bronze);
+  outline-offset: 3px;
+}
+.button {
+  max-width: 100%;
+  justify-content: center;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.workspace-header > .private-topnav {
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+.panel {
+  border-radius: 6px;
+}
+.membership-plans {
+  display: grid;
+  gap: 16px;
+}
+.membership-plans ul {
+  padding-inline-start: 1.15rem;
+  margin-bottom: 0;
+}
+.membership-plans li + li {
+  margin-top: 8px;
+}
+@media (max-width: 850px) {
+  .portal-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 700px) {
+  .workspace {
+    display: block;
+  }
+  .workspace .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    padding: 14px 16px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .workspace .sidebar :is(.community-box, .sidebar-label, .sidebar-bottom) {
+    display: none;
+  }
+  .workspace .sidebar nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 12px;
+  }
+  .workspace .sidebar nav :is(a, button) {
+    min-height: 44px;
+    font-size: 0.875rem;
+    padding: 8px 10px;
+    white-space: normal;
+  }
+  .workspace .workspace-header {
+    height: auto;
+    min-height: 64px;
+    padding: 8px 16px;
+  }
+  .workspace .workspace-header > span {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+  .workspace-header > .private-topnav {
+    gap: 0 12px;
+  }
+  .workspace-content {
+    padding-inline: 16px;
+  }
+}
+@media (max-width: 560px) {
+  .hero h1 {
+    font-size: clamp(2rem, 11vw, 3.6rem);
+    letter-spacing: -0.05em;
+  }
+  .hero-footnote {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+  .site-header {
+    gap: 10px;
+  }
+  .site-header .brand {
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .site-header .header-access {
+    text-align: right;
+    line-height: 1.3;
+  }
+  .site-header .theme-toggle {
+    margin-inline-start: 0;
+  }
+  .access-card {
+    max-width: 100%;
+    padding-inline: clamp(16px, 6vw, 27px);
+  }
+  .access-card h1 {
+    font-size: clamp(1.8rem, 9vw, 2.55rem);
+  }
+}
