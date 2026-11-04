@@ -121,6 +121,12 @@ export function PortalShell({
               <p>{subtitle}</p>
             </div>
           </div>
+          {status === 'visita_sin_correo' && (
+            <p role="status" className="error-notice">
+              La visita quedó autorizada, pero no se pudo enviar el correo.
+              Puedes compartir el QR desde Mis visitas.
+            </p>
+          )}
           {status === 'guardado' && (
             <p className="success-notice" role="status">
               El cambio se guardó correctamente.

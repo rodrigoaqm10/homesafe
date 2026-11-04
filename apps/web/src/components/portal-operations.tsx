@@ -1,11 +1,13 @@
 import { operate } from '@/app/portal/actions';
 import { SubmitButton } from '@/components/submit-button';
 import type { Membership } from '@/modules/identity/infrastructure/session';
+import { VisitLookup, VisitQr } from './visit-qr';
 export type Unit = { id: string; label: string };
 export type Visit = {
   id: string;
   unit_id: string;
   visitor_name: string;
+  vehicle_plate?: string | null;
   valid_from: string;
   valid_until: string;
   status: string;
@@ -114,10 +116,12 @@ export function VisitSection({
   member,
   units,
   visits,
+  lookup,
 }: {
   member: Membership;
   units: Unit[];
   visits: Visit[];
+  lookup?: string;
 }) {
   const resident = member.role === 'residente';
   const labels = Object.fromEntries(units.map((u) => [u.id, u.label]));
@@ -131,9 +135,33 @@ export function VisitSection({
         <h2>
           {resident ? 'Tus visitas, organizadas.' : 'Ingresos y salidas.'}
         </h2>
-        <p className="panel-note">
-          Se muestran hasta 100 visitas, de la más reciente a la más antigua.
-        </p>
+        {!resident && (
+          <VisitLookup
+            actionPath={'/portal/' + member.id}
+            admin={member.role === 'administrador'}
+            code={lookup}
+          />
+        )}
+        {lookup ? (
+          <p>
+            <a
+              className="text-link"
+              href={
+                '/portal/' +
+                member.id +
+                (member.role === 'administrador'
+                  ? '?seccion=operaciones&operacion=visitas'
+                  : '?seccion=visitas')
+              }
+            >
+              Volver a todas las visitas
+            </a>
+          </p>
+        ) : (
+          <p className="panel-note">
+            Se muestran hasta 100 visitas, de la más reciente a la más antigua.
+          </p>
+        )}
         {visits.map((v) => (
           <article className="private-record" key={v.id}>
             <span
@@ -144,6 +172,10 @@ export function VisitSection({
                 : names[v.status]}
             </span>
             <h3>{v.visitor_name}</h3>
+            {v.vehicle_plate && <p>Patente: {v.vehicle_plate}</p>}
+            {resident &&
+              v.status === 'authorized' &&
+              Date.parse(v.valid_until) >= now && <VisitQr id={v.id} />}
             <p>
               {labels[v.unit_id] ?? 'Unidad'} · {dateLabel(v.valid_from)} a{' '}
               {dateLabel(v.valid_until)}
@@ -199,7 +231,9 @@ export function VisitSection({
           <p className="empty-state">
             {resident
               ? 'Todavía no has autorizado visitas para tu unidad.'
-              : 'No hay visitas registradas en la comunidad.'}
+              : lookup
+                ? 'No encontramos una visita con ese código en esta comunidad.'
+                : 'No hay visitas registradas en la comunidad.'}
           </p>
         )}
       </section>
@@ -216,6 +250,21 @@ export function VisitSection({
             <input name="text" required minLength={3} maxLength={80} />
           </label>
           <label>
+            Correo de la visita (opcional)
+            <input name="visitor_email" type="email" maxLength={254} />
+            <small>Se utiliza para enviar el QR de esta autorización.</small>
+          </label>
+          <label>
+            Patente (opcional)
+            <input
+              name="vehicle_plate"
+              maxLength={12}
+              autoCapitalize="characters"
+              placeholder="Ej. ABCD12"
+            />
+            <small>Déjala en blanco si la visita viene sin auto.</small>
+          </label>
+          <label>
             Desde · hora de Chile
             <input type="datetime-local" name="from" required />
           </label>
@@ -225,8 +274,7 @@ export function VisitSection({
           </label>
           <p>
             Máximo siete días. El personal registra el ingreso dentro de este
-            horario. Esta autorización todavía no genera QR ni abre accesos
-            físicos.
+            horario, previa revisión de la autorización.
           </p>
           <SubmitButton>Autorizar visita</SubmitButton>
         </form>

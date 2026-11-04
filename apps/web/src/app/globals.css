@@ -2483,3 +2483,20 @@ a.dashboard-metric:hover {
     font-size: clamp(1.8rem, 9vw, 2.55rem);
   }
 }
+
+.visit-code {
+  margin: 12px 0;
+}
+.visit-code summary {
+  cursor: pointer;
+}
+.visit-code canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 10px 0;
+  border-radius: 6px;
+}
+.visit-code code {
+  overflow-wrap: anywhere;
+}

@@ -2,6 +2,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { santiagoToIso } from '@/modules/community/domain/time';
+import { sendVisitInvitation } from '@/modules/community/domain/visit-invitation';
 import { portalSection } from '@/modules/identity/domain/portal-navigation';
 import { requireMembership } from '@/modules/identity/infrastructure/session';
 
@@ -15,7 +16,7 @@ function uuid(value: unknown) {
 }
 export async function operate(form: FormData) {
   const membershipId = String(form.get('membership_id') ?? '');
-  const { client, member } = await requireMembership(membershipId);
+  const { client, member, user } = await requireMembership(membershipId);
   const kind = String(form.get('kind'));
   const unit =
     member.role === 'residente' ? member.unit_id : String(form.get('unit_id'));
@@ -24,6 +25,7 @@ export async function operate(form: FormData) {
     community_id: member.community_id,
   };
   let successful = false;
+  let visitMailFailed = false;
   try {
     if (['create_visit', 'create_incident', 'receive_package'].includes(kind)) {
       if (!uuid(unit)) throw new Error('UNIT_REQUIRED');
@@ -49,14 +51,41 @@ export async function operate(form: FormData) {
           Date.parse(valid_until) - Date.parse(valid_from) > 7 * 86400000
         )
           throw new Error('INVALID_DATES');
-        const { error } = await client.from('visits').insert({
-          ...scope,
-          unit_id: unit,
-          visitor_name: text,
-          valid_from,
-          valid_until,
-        });
-        successful = !error;
+        const plate = String(form.get('vehicle_plate') ?? '')
+          .trim()
+          .toUpperCase()
+          .replace(/[\s-]/g, '');
+        const email = String(form.get('visitor_email') ?? '').trim();
+        if (plate && !/^[A-Z0-9]{5,8}$/.test(plate))
+          throw new Error('INVALID_PLATE');
+        if (
+          email &&
+          (email.length > 254 ||
+            !/^[^\s@<>,;]+@[^\s@<>,;]+\.[^\s@<>,;]+$/.test(email))
+        )
+          throw new Error('INVALID_EMAIL');
+        const { data: visit, error } = await client
+          .from('visits')
+          .insert({
+            ...scope,
+            unit_id: unit,
+            visitor_name: text,
+            valid_from,
+            valid_until,
+            ...(plate ? { vehicle_plate: plate } : {}),
+          })
+          .select('id')
+          .single();
+        successful = !error && Boolean(visit);
+        if (successful && visit && email) {
+          visitMailFailed = !(await sendVisitInvitation(
+            user.id,
+            email,
+            visit.id,
+            valid_from,
+            valid_until,
+          ));
+        }
       } else if (kind === 'create_incident') {
         if (text.length < 5 || text.length > 160)
           throw new Error('INVALID_TEXT');
@@ -154,6 +183,10 @@ export async function operate(form: FormData) {
       '?' +
       location +
       '&estado=' +
-      (successful ? 'guardado' : 'no_disponible'),
+      (successful
+        ? visitMailFailed
+          ? 'visita_sin_correo'
+          : 'guardado'
+        : 'no_disponible'),
   );
 }

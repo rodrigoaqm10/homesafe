@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { operate } from '@/app/portal/actions';
 import { emailReceipt } from '@/app/portal/receipt-actions';
 import { createClient } from '@/lib/supabase/server';
+import { parseVisitCode } from '@/modules/community/domain/visit-code';
 import { money } from '@/modules/finance/domain/money';
 import { portalSection } from '@/modules/identity/domain/portal-navigation';
 import type { Membership } from '@/modules/identity/infrastructure/session';
@@ -16,11 +17,13 @@ import { PortalShell, portalHref } from './portal-shell';
 import { SubmitButton } from './submit-button';
 export async function MemberPortal({
   hasPro = false,
+  visitCode,
   member,
   section,
   status,
 }: {
   hasPro?: boolean;
+  visitCode?: string;
   member: Membership;
   section?: string;
   status?: string;
@@ -43,6 +46,11 @@ export async function MemberPortal({
         )
       : q;
   };
+  const lookup =
+    !resident && typeof visitCode === 'string' && visitCode.trim()
+      ? visitCode
+      : undefined;
+  const lookupId = lookup ? parseVisitCode(lookup) : null;
   const needsUnits =
     resident || ['visitas', 'encomiendas', 'solicitudes'].includes(current);
   const empty = { data: [], error: null };
@@ -63,9 +71,13 @@ export async function MemberPortal({
             )
           : scope('units').order('label'),
       current === 'visitas'
-        ? personal('visits')
-            .order('created_at', { ascending: false })
-            .limit(100)
+        ? lookup
+          ? lookupId
+            ? personal('visits').eq('id', lookupId).limit(1)
+            : empty
+          : personal('visits')
+              .order('created_at', { ascending: false })
+              .limit(100)
         : empty,
       current === 'encomiendas'
         ? personal('packages')
@@ -106,6 +118,7 @@ export async function MemberPortal({
   if (current === 'visitas')
     content = (
       <VisitSection
+        lookup={lookup}
         member={member}
         units={units.data ?? []}
         visits={visits.data ?? []}

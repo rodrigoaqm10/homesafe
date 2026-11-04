@@ -14,6 +14,7 @@ export default async function Page({
   searchParams: Promise<{
     dia?: string;
     pagina?: string;
+    codigo?: string;
     estado?: string;
     seccion?: string;
     operacion?: string;
@@ -23,7 +24,8 @@ export default async function Page({
   const { client, member } = await requireMembership(membresia);
   const hasPro =
     member.role !== 'residente' && (await hasCommunityPro(client, member));
-  const { dia, pagina, estado, seccion, operacion } = await searchParams;
+  const { dia, pagina, codigo, estado, seccion, operacion } =
+    await searchParams;
   if (
     member.role !== 'residente' &&
     (seccion === 'bitacora' ||
@@ -53,6 +55,7 @@ export default async function Page({
     );
   return (
     <MemberPortal
+      visitCode={codigo}
       hasPro={hasPro}
       member={member}
       section={member.role === 'administrador' ? operacion : seccion}
