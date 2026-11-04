@@ -86,18 +86,26 @@ export async function generateShiftSummary(
     });
     if (!response.ok) {
       const payload = (await response.json().catch(() => null)) as {
-        error?: { code?: string };
+        error?: { code?: string; type?: string };
       } | null;
       const code = payload?.error?.code;
       const reason =
-        code === 'insufficient_quota' || code === 'billing_hard_limit_reached'
-          ? 'OpenAI indicó que el proyecto no tiene cuota disponible. Revisa la facturación y el saldo de la API.'
+        payload?.error?.type === 'insufficient_quota' ||
+        [
+          'insufficient_quota',
+          'billing_hard_limit_reached',
+          'credit_balance_exhausted',
+          'organization_spend_limit_exceeded',
+          'project_spend_limit_exceeded',
+          'organization_usage_limit_exceeded',
+        ].includes(code ?? '')
+          ? 'OpenAI indicó que el proyecto no tiene cuota disponible. Revisa los créditos y los límites de uso del proyecto en OpenAI.'
           : response.status === 401
             ? 'OpenAI rechazó la clave. Revisa OPENAI_API_KEY en Vercel y vuelve a desplegar.'
             : response.status === 403 || response.status === 404
               ? 'OpenAI no permitió usar el modelo. Revisa HOME_SAFE_AI_MODEL y los permisos del proyecto.'
               : response.status === 429
-                ? 'OpenAI limitó temporalmente las solicitudes. Intenta más tarde.'
+                ? 'OpenAI limitó esta solicitud. Si vuelve a ocurrir, revisa el saldo y los límites de la API.'
                 : 'OpenAI no pudo completar la solicitud. Intenta más tarde.';
       console.warn('shift_summary_provider_failed', {
         status: response.status,
