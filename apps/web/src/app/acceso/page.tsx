@@ -1,12 +1,16 @@
 import Link from 'next/link';
 import { LoginForm } from '@/components/login-form';
+import { ThemeToggle } from '@/components/theme-toggle';
 export const metadata = { title: 'Acceso privado' };
 export default function Access() {
   return (
     <main className="access-page">
-      <Link className="brand" href="/">
-        HOME SAFE
-      </Link>
+      <header className="access-header">
+        <Link className="brand" href="/">
+          HOME SAFE
+        </Link>
+        <ThemeToggle />
+      </header>
       <section className="access-card">
         <span className="eyebrow">ESPACIO PRIVADO</span>
         <h1>

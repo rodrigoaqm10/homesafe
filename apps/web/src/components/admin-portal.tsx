@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { logout } from '@/app/acceso/actions';
 import { administer } from '@/app/portal/admin-actions';
 import { SubmitButton } from '@/components/submit-button';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { createClient } from '@/lib/supabase/server';
 import { money } from '@/modules/finance/domain/money';
 import type { Membership } from '@/modules/identity/infrastructure/session';
@@ -178,6 +179,7 @@ export async function AdminPortal({
               Cerrar sesión
             </button>
           </form>
+          <ThemeToggle />
         </header>
         <main className="workspace-content">
           <div className="page-top">

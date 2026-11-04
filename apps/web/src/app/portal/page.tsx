@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { logout } from '@/app/acceso/actions';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { roleNames } from '@/modules/community/domain/demo-workflows';
 import {
   type Membership,
@@ -24,6 +25,7 @@ export default async function Portal() {
             Cerrar sesión
           </button>
         </form>
+        <ThemeToggle />
       </header>
       <section className="picker-intro">
         <span className="eyebrow">ACCESO VERIFICADO</span>

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 function Architecture() {
   return (
@@ -84,6 +85,7 @@ export default function Home() {
         <Link className="header-access" href="/acceso">
           Acceso privado
         </Link>
+        <ThemeToggle />
       </header>
       <section className="hero">
         <div className="hero-copy">

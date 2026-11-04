@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 type Incident = {
   id: number;
@@ -136,6 +137,7 @@ export function DemoWorkspace() {
             </button>
             <span className="avatar">AD</span>
           </div>
+          <ThemeToggle />
         </header>
         {notificationOpen && (
           <div className="notification-panel">

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/theme-toggle';
 export const metadata = { title: 'Elige una experiencia' };
 const roles = [
   {
@@ -36,6 +37,7 @@ export default function Demo() {
         <Link className="text-link" href="/">
           Volver al inicio
         </Link>
+        <ThemeToggle />
       </header>
       <section className="picker-intro">
         <span className="eyebrow">TRES PERSPECTIVAS. UNA COMUNIDAD.</span>

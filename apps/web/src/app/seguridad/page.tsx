@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { MfaForm } from '@/components/mfa-form';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { requireIdentity } from '@/modules/identity/infrastructure/session';
 export const metadata = { title: 'Verificación en dos pasos' };
 export default async function Security() {
@@ -9,9 +10,12 @@ export default async function Security() {
   const verified = claims?.claims.aal === 'aal2';
   return (
     <main className="access-page">
-      <Link className="brand" href="/portal">
-        HOME SAFE
-      </Link>
+      <header className="access-header">
+        <Link className="brand" href="/portal">
+          HOME SAFE
+        </Link>
+        <ThemeToggle />
+      </header>
       <section className="access-card">
         <span className="eyebrow">UNA CAPA ADICIONAL DE PROTECCIÓN</span>
         <h1>

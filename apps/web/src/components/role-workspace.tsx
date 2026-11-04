@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { useDemo } from '@/app/demo/layout';
+import { ThemeToggle } from '@/components/theme-toggle';
 import {
   demoUnit,
   type Role,
@@ -197,6 +198,7 @@ export function RoleWorkspace({ role }: { role: Role }) {
           <Link href="/demo" className="text-link">
             Cambiar perfil de muestra
           </Link>
+          <ThemeToggle />
         </header>
         <main className="workspace-content">
           <div className="page-top">

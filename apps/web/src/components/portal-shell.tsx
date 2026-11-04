@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { logout } from '@/app/acceso/actions';
+import { ThemeToggle } from '@/components/theme-toggle';
 import {
   conciergeNavigation,
   residentNavigation,
@@ -103,6 +104,7 @@ export function PortalShell({
               </button>
             </form>
           </div>
+          <ThemeToggle />
         </header>
         <main className="workspace-content">
           <div className="page-top">

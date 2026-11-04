@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { cookies } from 'next/headers';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { ThemeProvider } from '@/components/theme-toggle';
 export const metadata: Metadata = {
   title: {
     default: 'Home Safe — El cuidado de tu edificio, elevado.',
@@ -26,8 +26,9 @@ export default async function RootLayout({
         <a className="skip-link" href="#contenido">
           Saltar al contenido
         </a>
-        <div id="contenido">{children}</div>
-        <ThemeToggle initial={theme} />
+        <ThemeProvider initial={theme}>
+          <div id="contenido">{children}</div>
+        </ThemeProvider>
       </body>
     </html>
   );
