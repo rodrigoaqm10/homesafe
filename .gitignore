@@ -12,3 +12,8 @@ HomeSafe_*.md
 docs/*preview*.png
 docs/panel-preview.png
 .DS_Store
+
+.expo/
+apps/mobile/dist/
+apps/mobile/android/
+apps/mobile/ios/
